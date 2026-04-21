@@ -10,8 +10,11 @@ function getSupabase(ref: React.RefObject<SupabaseClient | null>) {
   return ref.current;
 }
 
-const inputClass =
-  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-white placeholder:text-[var(--text-2)] focus:border-white/25 focus:outline-none";
+const inputCls =
+  "w-full rounded-xl border border-white/[0.08] bg-[#0d0d0d] px-4 py-3 text-sm text-white placeholder:text-[#555] transition-colors focus:border-white/20 focus:bg-[#141414] focus:outline-none focus:ring-0";
+
+const primaryBtnCls =
+  "mt-2 w-full rounded-full bg-white py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] active:scale-[0.98] disabled:opacity-50";
 
 export default function RegisterPage() {
   const sbRef = useRef<SupabaseClient | null>(null);
@@ -57,24 +60,32 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Link href="/" className="fixed left-4 top-4 z-10 text-lg font-semibold tracking-tight text-white hover:text-[var(--text-2)]">Zephr</Link>
-      <div className="mx-auto w-full max-w-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8">
-        <div className="mb-6 space-y-1 text-center">
-          <h1 className="text-2xl font-semibold text-white">Create account</h1>
-          <p className="text-sm text-[var(--text-2)]">Search aviation ADs in seconds.</p>
+      <Link href="/" className="fixed left-6 top-5 z-10 flex items-center gap-1.5 text-xs text-[#737373] transition-colors hover:text-white">
+        <span className="text-[10px]">‹</span> Home
+      </Link>
+      <div className="mx-auto w-full max-w-[380px]">
+        {/* Logo mark */}
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#141414] text-base font-bold text-white">
+            Z
+          </div>
+        </div>
+        <div className="mb-8 space-y-1 text-center">
+          <h1 className="text-[1.35rem] font-semibold tracking-tight text-white">Create account</h1>
+          <p className="text-sm text-[#737373]">Search aviation ADs in seconds.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required className={inputClass} />
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
-          <input type="password" placeholder="Password (min. 8 characters)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className={inputClass} />
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-white py-3 font-semibold text-black hover:bg-white/90 disabled:opacity-50">
+          <input type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required className={inputCls} />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputCls} />
+          <input type="password" placeholder="Password (min. 8 characters)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className={inputCls} />
+          {error && <p className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3 py-2 text-xs text-red-400">{error}</p>}
+          <button type="submit" disabled={loading} className={primaryBtnCls}>
             {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
-        <p className="mt-6 text-center text-sm text-[var(--text-2)]">
+        <p className="mt-8 text-center text-[0.6875rem] text-[#737373]">
           Already have an account?{" "}
-          <Link href="/login" className="text-white underline-offset-2 hover:underline">Log in</Link>
+          <Link href="/login" className="font-medium text-white underline-offset-2 hover:underline">Log in.</Link>
         </p>
       </div>
     </>

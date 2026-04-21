@@ -13,7 +13,13 @@ function getSupabase(ref: React.RefObject<SupabaseClient | null>) {
 }
 
 const inputCls =
-  "w-full rounded-lg border border-white/[0.1] bg-[#141414] px-4 py-3 text-sm text-white placeholder:text-[#737373] transition-all duration-200 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/10";
+  "w-full rounded-xl border border-white/[0.08] bg-[#0d0d0d] px-4 py-3 text-sm text-white placeholder:text-[#555] transition-colors focus:border-white/20 focus:bg-[#141414] focus:outline-none focus:ring-0";
+
+const pillBtnCls =
+  "flex items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] py-2.5 text-sm font-medium text-[#d4d4d4] hover:text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] hover:bg-white/[0.09] active:scale-[0.98]";
+
+const primaryBtnCls =
+  "mt-2 w-full rounded-full bg-white py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] active:scale-[0.98] disabled:opacity-50";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -59,7 +65,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <h1 className="mb-1.5 text-center text-xl font-semibold tracking-tight text-white">
+        <h1 className="mb-1.5 text-center text-[1.35rem] font-semibold tracking-tight text-white">
           Log in to Zephr
         </h1>
         <p className="mb-8 text-center text-sm text-[#737373]">
@@ -77,21 +83,21 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogle}
-            className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#141414] py-2.5 text-sm text-white transition-all duration-200 hover:border-white/20 hover:bg-[#1a1a1a]"
+            className={pillBtnCls}
           >
             <GoogleIcon />
-            Google
+            Log in with Google
           </button>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#141414] py-2.5 text-sm text-white transition-all duration-200 hover:border-white/20 hover:bg-[#1a1a1a]"
+            className={pillBtnCls}
             disabled
           >
             {/* GitHub icon */}
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.01-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.3 0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
             </svg>
-            GitHub
+            Log in with GitHub
           </button>
         </div>
 
@@ -172,9 +178,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-1 w-full rounded-lg bg-white py-3 text-sm font-semibold text-black transition-all duration-200 hover:bg-[#e5e5e5] disabled:opacity-50"
+            className={primaryBtnCls}
           >
-            {loading ? "Signing in…" : "Log in"}
+            {loading ? "Signing in…" : "Log In"}
           </button>
         </form>
 
