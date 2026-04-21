@@ -18,6 +18,7 @@ function useTheme() {
       | null;
     if (stored === "light") {
       document.documentElement.classList.add("light");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThemeState("light");
     }
   }, []);

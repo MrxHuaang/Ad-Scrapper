@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ADResult, SearchParams, SourceKey } from "@/types";
+import type { ADResult, SearchParams } from "@/types";
 import { useAdSearch } from "@/hooks/useAdSearch";
 import { useSidebar } from "@/components/providers/SidebarProvider";
 import { showToast } from "@/hooks/useToast";
@@ -13,7 +13,7 @@ import { CardsView } from "@/components/search/CardsView";
 import { ResultsHeader } from "@/components/search/ResultsHeader";
 import { Pagination } from "@/components/search/Pagination";
 import { BulkBar } from "@/components/search/BulkBar";
-import { getSortedResults, calcRelevance } from "@/components/search/searchUtils";
+import { getSortedResults } from "@/components/search/searchUtils";
 import { Clock, X } from "lucide-react";
 
 /* ───── Session Storage helpers ───── */
@@ -31,7 +31,6 @@ export default function SearchPage() {
     setSearchStatus,
     setResultCount,
     setElapsedMs: setSidebarMs,
-    updateCount,
   } = useSidebar();
 
   /* ───── Local state ───── */
@@ -72,7 +71,6 @@ export default function SearchPage() {
     } catch {
       /* invalid stored data — ignore */
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ───── Sync SSE results → local state ───── */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import type { ADResult } from "@/types";
 import {
   BADGE_STYLES,
@@ -23,17 +23,6 @@ interface ResultsTableProps {
   onSort: (field: string) => void;
   searchTerm: string;
 }
-
-/* ───── Sortable column config ───── */
-const SORTABLE_FIELDS: Record<string, string> = {
-  _relevance: "Rel",
-  Source: "Source",
-  AD_Number: "AD #",
-  Make: "Make",
-  Model: "Model",
-  Subject: "Subject",
-  Effective_Date: "Date",
-};
 
 /* ───── Components ───── */
 
@@ -96,13 +85,10 @@ function SortHeader({
 }
 
 function CopyButton({ text }: { text: string }) {
-  const [show, setShow] = useState(false);
-
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
       showToast("Copied", "success");
-      setShow(false);
     } catch {
       showToast("Could not copy", "error");
     }
@@ -112,8 +98,6 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
       className="ml-1 inline-flex items-center rounded p-0.5 text-[var(--text-3)] opacity-0 transition-opacity group-hover/row:opacity-100 hover:text-[var(--text-1)]"
       aria-label="Copy AD number"
     >
@@ -141,11 +125,11 @@ export function ResultsTable({
   const someSelected =
     !allSelected && results.some((r) => selectedIds.has(r.AD_Number));
 
-  // Set indeterminate via ref
-  if (selectAllRef.current) {
-    selectAllRef.current.indeterminate = someSelected;
-  }
-
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
   function handleSelectAll() {
     if (allSelected) {
       results.forEach((r) => onToggleSelect(r.AD_Number));

@@ -1,7 +1,6 @@
 import { type NextRequest } from "next/server";
 import { refreshSession } from "@/lib/supabase/middleware";
 
-const PUBLIC_PATHS = ["/landing", "/pricing"];
 const AUTH_PATHS = ["/login", "/register"];
 
 export async function proxy(request: NextRequest) {

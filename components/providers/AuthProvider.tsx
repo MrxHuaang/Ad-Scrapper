@@ -38,6 +38,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [plan, setPlan] = useState<Plan>("free");
   const [isLoading, setIsLoading] = useState(!!supabase);
 
+  async function fetchPlan(sb: SupabaseClient, userId: string) {
+    const { data } = await sb
+      .from("profiles")
+      .select("plan")
+      .eq("id", userId)
+      .single();
+    setPlan((data?.plan as Plan) ?? "free");
+    setIsLoading(false);
+  }
+
   useEffect(() => {
     if (!supabase) return;
 
@@ -63,15 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  async function fetchPlan(sb: SupabaseClient, userId: string) {
-    const { data } = await sb
-      .from("profiles")
-      .select("plan")
-      .eq("id", userId)
-      .single();
-    setPlan((data?.plan as Plan) ?? "free");
-    setIsLoading(false);
-  }
+
 
   return (
     <AuthCtx value={{ user, session, plan, isLoading }}>
