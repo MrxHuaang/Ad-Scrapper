@@ -15,11 +15,11 @@ function getSupabase(ref: React.RefObject<SupabaseClient | null>) {
 const inputCls =
   "w-full rounded-xl border border-white/[0.08] bg-[#0d0d0d] px-4 py-3 text-sm text-white placeholder:text-[#555] transition-colors focus:border-white/20 focus:bg-[#141414] focus:outline-none focus:ring-0";
 
-const pillBtnCls =
-  "flex items-center justify-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] py-2.5 text-sm font-medium text-[#d4d4d4] hover:text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] hover:bg-white/[0.09] active:scale-[0.98]";
+const oauthBtnCls =
+  "flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#0d0d0d] py-3 text-sm font-medium text-[#d4d4d4] transition-colors hover:border-white/[0.15] hover:bg-[#141414] hover:text-white";
 
 const primaryBtnCls =
-  "mt-2 w-full rounded-full bg-white py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] active:scale-[0.98] disabled:opacity-50";
+  "mt-2 w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 disabled:border disabled:border-white/[0.04] disabled:bg-white/[0.02] disabled:text-[#444] disabled:shadow-none bg-white text-black hover:bg-[#e5e5e5] shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)]";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -83,14 +83,14 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogle}
-            className={pillBtnCls}
+            className={oauthBtnCls}
           >
             <GoogleIcon />
             Log in with Google
           </button>
           <button
             type="button"
-            className={pillBtnCls}
+            className={oauthBtnCls}
             disabled
           >
             {/* GitHub icon */}
