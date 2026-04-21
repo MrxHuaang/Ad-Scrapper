@@ -20,10 +20,10 @@ export function SearchStatus({ status, count, ms, errors }: SearchStatusProps) {
           <Loader2 size={14} className="animate-spin text-[var(--text-2)]" aria-hidden />
         )}
         <span className="text-[var(--text-2)]">
-          {status === "searching" && "Buscando…"}
-          {status === "done" && `${count} resultados · ${(ms / 1000).toFixed(1)}s`}
+          {status === "searching" && "Searching…"}
+          {status === "done" && `${count} results · ${(ms / 1000).toFixed(1)}s`}
           {status === "error" && (
-            <span className="text-amber-400">Error — {count} resultados recuperados</span>
+            <span className="text-amber-400">Error — {count} results retrieved</span>
           )}
         </span>
       </div>

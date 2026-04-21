@@ -18,6 +18,9 @@ export const SOURCE_KEYS = [
   "anac_brazil",
   "dgac_chile",
   "anac_argentina",
+  "aerocivil_colombia",
+  "casa_australia",
+  "gcaa_uae",
   "all",
 ] as const;
 
@@ -30,6 +33,9 @@ export const SOURCE_LABELS: Record<SourceKey, string> = {
   anac_brazil: "ANAC Brazil",
   dgac_chile: "DGAC Chile",
   anac_argentina: "ANAC Argentina",
+  aerocivil_colombia: "AEROCIVIL",
+  casa_australia: "CASA",
+  gcaa_uae: "GCAA",
   all: "All Sources",
 };
 
@@ -45,3 +51,6 @@ export interface SearchParams {
 }
 
 export type SearchStatus = "idle" | "searching" | "done" | "error";
+
+/** Alias used by Fase 2 search components */
+export type ADResult = AD;

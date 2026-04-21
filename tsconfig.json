@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "spline-alias": ["./node_modules/@splinetool/react-spline"]
     }
   },
   "include": [

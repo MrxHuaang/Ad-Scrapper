@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { LenisProvider } from "@/components/providers/LenisProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +12,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const cormorant = Playfair_Display({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -31,10 +39,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} antialiased`}
     >
-      <body className="min-h-dvh bg-[var(--bg)] text-[var(--text-1)]">
-        <AuthProvider>{children}</AuthProvider>
+      <body className="min-h-dvh overflow-x-hidden bg-[var(--bg)] text-[var(--text-1)]">
+        <AuthProvider>
+          <LenisProvider>{children}</LenisProvider>
+        </AuthProvider>
       </body>
     </html>
   );
