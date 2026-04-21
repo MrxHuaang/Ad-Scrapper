@@ -14,7 +14,7 @@ const inputCls =
   "w-full rounded-xl border border-white/[0.08] bg-[#0d0d0d] px-4 py-3 text-sm text-white placeholder:text-[#555] transition-colors focus:border-white/20 focus:bg-[#141414] focus:outline-none focus:ring-0";
 
 const primaryBtnCls =
-  "mt-2 w-full rounded-full bg-white py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] active:scale-[0.98] disabled:opacity-50";
+  "mt-2 w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 disabled:border disabled:border-white/[0.04] disabled:bg-white/[0.02] disabled:text-[#444] disabled:shadow-none bg-white text-black hover:bg-[#e5e5e5] shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)]";
 
 export default function RegisterPage() {
   const sbRef = useRef<SupabaseClient | null>(null);
