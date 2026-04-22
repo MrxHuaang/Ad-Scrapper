@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, LayoutGrid, List, Link as LinkIcon, Download } from "lucide-react";
+import { Search, LayoutGrid, List, Download, Link as LinkIcon } from "lucide-react";
 
 interface ResultsHeaderProps {
   total: number;
@@ -15,99 +15,96 @@ interface ResultsHeaderProps {
 }
 
 export function ResultsHeader({
-  total,
-  filtered,
-  lastSearchMs,
-  viewMode,
-  onViewChange,
-  quickFilter,
-  onQuickFilterChange,
-  onExportCsv,
-  onExportExcel,
+  total, filtered, lastSearchMs, viewMode, onViewChange,
+  quickFilter, onQuickFilterChange, onExportCsv, onExportExcel,
 }: ResultsHeaderProps) {
   function handleCopyUrl() {
     navigator.clipboard.writeText(window.location.href).catch(() => {});
   }
 
+  const shown = filtered ?? total;
+  const isFiltered = filtered !== null;
+
   return (
-    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-baseline gap-2">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-[var(--text-3)]">
-          Results
-        </h2>
-        <span className="text-sm font-semibold text-[var(--text-1)]">
-          {filtered !== null
-            ? `Showing ${filtered} of ${total}`
-            : `${total} results`}
-        </span>
+    <div
+      className="mb-3 flex flex-wrap items-center gap-3 rounded-xl px-4 py-2.5"
+      style={{ background: "#0d0d0d", border: "1px solid #1e1e1e" }}
+    >
+      {/* Count */}
+      <div className="flex items-baseline gap-2 mr-auto">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Results</span>
+        <span className="text-sm font-bold text-white">{shown.toLocaleString()}</span>
+        {isFiltered && (
+          <span className="text-xs text-white/30">/ {total.toLocaleString()}</span>
+        )}
         {lastSearchMs !== null && (
-          <span className="text-xs text-[var(--text-3)]">
-            · {(lastSearchMs / 1000).toFixed(1)}s
+          <span className="text-[11px] tabular-nums text-white/25">
+            {(lastSearchMs / 1000).toFixed(2)}s
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative">
-          <Search
-            size={14}
-            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-3)]"
-            aria-hidden
-          />
-          <input
-            type="text"
-            value={quickFilter}
-            onChange={(e) => onQuickFilterChange(e.target.value)}
-            placeholder="Filter results…"
-            className="w-44 rounded-md border border-[var(--border)] bg-[var(--surface)] py-1.5 pl-7 pr-3 text-xs text-[var(--text-1)] placeholder:text-[var(--text-3)] transition-all focus:w-56 focus:border-[var(--border-strong)] focus:outline-none"
-          />
-        </div>
-
-        <div className="flex overflow-hidden rounded-md border border-[var(--border)]">
-          <button
-            type="button"
-            onClick={() => onViewChange("table")}
-            className={`inline-flex items-center justify-center p-1.5 transition-colors ${
-              viewMode === "table"
-                ? "bg-[var(--surface-2)] text-[var(--text-1)]"
-                : "text-[var(--text-3)] hover:text-[var(--text-2)]"
-            }`}
-            aria-label="Table view"
-          >
-            <List size={14} />
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewChange("cards")}
-            className={`inline-flex items-center justify-center p-1.5 transition-colors ${
-              viewMode === "cards"
-                ? "bg-[var(--surface-2)] text-[var(--text-1)]"
-                : "text-[var(--text-3)] hover:text-[var(--text-2)]"
-            }`}
-            aria-label="Card view"
-          >
-            <LayoutGrid size={14} />
-          </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleCopyUrl}
-          className="inline-flex items-center justify-center rounded-md border border-[var(--border)] p-1.5 text-[var(--text-3)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-2)]"
-          aria-label="Copy URL"
-        >
-          <LinkIcon size={14} />
-        </button>
-
-        <button type="button" onClick={onExportCsv} className="btn-outline btn-sm">
-          <Download size={12} aria-hidden />
-          CSV
-        </button>
-        <button type="button" onClick={onExportExcel} className="btn-outline btn-sm">
-          <Download size={12} aria-hidden />
-          Excel
-        </button>
+      {/* Filter input */}
+      <div className="relative">
+        <Search size={12} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
+        <input
+          type="text"
+          value={quickFilter}
+          onChange={(e) => onQuickFilterChange(e.target.value)}
+          placeholder="Filter results…"
+          className="w-40 rounded-lg py-1.5 pl-8 pr-3 text-[12px] text-white/70 placeholder:text-white/25 transition-all focus:w-56 focus:outline-none"
+          style={{ background: "#141414", border: "1px solid #252525" }}
+        />
       </div>
+
+      {/* View toggle */}
+      <div className="flex overflow-hidden rounded-lg" style={{ border: "1px solid #252525" }}>
+        {(["table", "cards"] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => onViewChange(mode)}
+            className={`cursor-pointer inline-flex items-center justify-center px-2.5 py-1.5 transition-colors ${
+              viewMode === mode ? "text-white" : "text-white/25 hover:text-white/55"
+            }`}
+            style={{ background: viewMode === mode ? "#1e1e1e" : "transparent" }}
+            aria-label={`${mode} view`}
+          >
+            {mode === "table" ? <List size={13} /> : <LayoutGrid size={13} />}
+          </button>
+        ))}
+      </div>
+
+      {/* Copy URL */}
+      <button
+        type="button"
+        onClick={handleCopyUrl}
+        className="cursor-pointer inline-flex items-center justify-center rounded-lg p-1.5 text-white/25 transition-colors hover:text-white/60"
+        style={{ border: "1px solid #252525", background: "transparent" }}
+        aria-label="Copy URL"
+      >
+        <LinkIcon size={13} />
+      </button>
+
+      {/* Export buttons — liquid glass */}
+      {[
+        { label: "CSV", fn: onExportCsv },
+        { label: "Excel", fn: onExportExcel },
+      ].map(({ label, fn }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={fn}
+          className="cursor-pointer inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-medium text-white/45 backdrop-blur-sm transition-all hover:text-white/80"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
+        >
+          <Download size={11} aria-hidden />
+          {label}
+        </button>
+      ))}
     </div>
   );
 }

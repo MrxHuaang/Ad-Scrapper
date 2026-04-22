@@ -48,17 +48,17 @@ export function Navbar() {
 
           {/* Center: Floating Pill Navbar (Absolute Centered) */}
           <nav
-            className={`absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border p-1.5 transition-all duration-300 md:flex ${
+            className={`absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border transition-all duration-500 md:flex ${
               scrolled
-                ? "border-white/10 bg-black/60 shadow-[0_4px_24px_rgba(0,0,0,0.5)] backdrop-blur-xl"
-                : "border-white/10 bg-white/[0.03] backdrop-blur-md"
+                ? "border-white/10 bg-black/40 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-2xl p-1"
+                : "border-white/[0.08] bg-white/[0.02] backdrop-blur-xl p-1.5"
             }`}
           >
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="rounded-full px-4 py-2 text-sm text-[#a1a1a1] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white"
+                className="rounded-full px-4 py-2 text-sm font-medium text-[#a1a1a1] transition-all duration-300 hover:bg-white/[0.05] hover:text-white"
               >
                 {link.label}
               </Link>
@@ -67,7 +67,7 @@ export function Navbar() {
             {/* Solid Black Button embedded inside the pill */}
             <Link
               href="/login"
-              className="ml-2 flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-medium text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_0_0_1px_rgba(255,255,255,0.05)] transition-colors hover:bg-[#111]"
+              className="ml-2 flex items-center gap-2 rounded-full bg-black/80 px-4 py-2 text-sm font-medium text-white shadow-[0_0_0_1px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all hover:bg-black"
             >
               Iniciar Sesión
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-black">

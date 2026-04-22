@@ -29,10 +29,13 @@ export default function LandingPage() {
             - maskImage: invisible at the top to fade perfectly from the black Hero, taking 250px to become fully visible. 
           */}
           <div 
-            className="pointer-events-none absolute inset-0 z-0"
+            className="prism-reveal pointer-events-none absolute inset-0 z-0 overflow-clip"
             style={{
-              maskImage: "linear-gradient(to bottom, transparent, black 150px, black)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent, black 150px, black)"
+              // Smooth the fade-in to avoid 1px seams between sections on some GPUs/browsers.
+              maskImage:
+                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 220px, rgba(0,0,0,1) 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 220px, rgba(0,0,0,1) 100%)",
             }}
           >
             {/* 
@@ -41,7 +44,7 @@ export default function LandingPage() {
               We use opacity-30 here instead of turning down the shader glow, 
               so the cloudy volume remains large but subtle.
             */}
-            <div className="sticky top-0 h-dvh w-full opacity-30">
+            <div className="sticky top-0 h-dvh min-h-dvh w-full opacity-30 [transform:translateZ(0)]">
               <Prism 
                 animationType="rotate"
                 timeScale={0.15}
@@ -54,6 +57,7 @@ export default function LandingPage() {
                 glow={1} // Restore original glow to maintain full shape volume
                 colorSaturation={0} // Grayscale
                 transparent={true}
+                suspendWhenOffscreen={false}
               />
             </div>
           </div>

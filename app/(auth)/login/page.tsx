@@ -51,9 +51,9 @@ export default function LoginPage() {
       {/* Back link */}
       <Link
         href="/"
-        className="fixed left-6 top-5 z-10 flex items-center gap-1.5 text-xs text-[#737373] transition-colors hover:text-white"
+        className="fixed left-6 top-5 z-10 inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-4 py-2 text-sm font-medium text-[#a1a1a1] backdrop-blur-sm transition-all hover:border-white/[0.2] hover:bg-white/[0.09] hover:text-white"
       >
-        <span className="text-[10px]">‹</span> Home
+        <span className="text-base leading-none">‹</span> Home
       </Link>
 
       {/* Card */}

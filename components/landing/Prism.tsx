@@ -249,8 +249,17 @@ const Prism: React.FC<PrismProps> = ({
     const mesh = new Mesh(gl, { geometry, program });
 
     const resize = () => {
-      const w = container.clientWidth || 1;
-      const h = container.clientHeight || 1;
+      // Guard against zero-size layouts (can happen on first paint, while
+      // sticky/absolute containers settle, or if temporarily offscreen).
+      const rect = container.getBoundingClientRect();
+      const w = Math.max(
+        1,
+        Math.floor(rect.width || container.clientWidth || 0),
+      );
+      const h = Math.max(
+        1,
+        Math.floor(rect.height || container.clientHeight || 0),
+      );
       renderer.setSize(w, h);
       iResBuf[0] = gl.drawingBufferWidth;
       iResBuf[1] = gl.drawingBufferHeight;
@@ -363,6 +372,13 @@ const Prism: React.FC<PrismProps> = ({
     }
 
     const render = (t: number) => {
+      // If WebGL is in a transient 0×0 state, skip this frame (prevents
+      // incomplete framebuffer / zero-size texture errors).
+      if (!gl.drawingBufferWidth || !gl.drawingBufferHeight) {
+        raf = requestAnimationFrame(render);
+        return;
+      }
+
       const time = (t - t0) * 0.001;
       program.uniforms.iTime.value = time;
 

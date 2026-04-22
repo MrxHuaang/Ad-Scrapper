@@ -5,7 +5,7 @@ export const BADGE_STYLES: Record<string, string> = {
   federal_register: "bg-blue-500/10 text-blue-300 border-blue-500/20",
   easa: "bg-cyan-500/10 text-cyan-300 border-cyan-500/20",
   transport_canada: "bg-red-500/10 text-red-300 border-red-500/20",
-  anac_brazil: "bg-green-500/10 text-green-300 border-green-500/20",
+  anac_brazil: "bg-zinc-500/10 text-zinc-300 border-zinc-500/20",
   anac_argentina: "bg-blue-400/10 text-blue-200 border-blue-400/20",
   dgac_chile: "bg-red-400/10 text-red-200 border-red-400/20",
   aerocivil_colombia: "bg-yellow-500/10 text-yellow-300 border-yellow-500/20",
