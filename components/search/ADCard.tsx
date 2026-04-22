@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import Link from "next/link";
 import { FileText, Bookmark, BookmarkCheck, Copy } from "lucide-react";
 import type { ADResult } from "@/types";
 import { SOURCE_SHORT, normalizeSource, calcRelevance, formatDate, getTypeLabel } from "./searchUtils";
@@ -44,8 +45,21 @@ export function ADCard({ ad, isSelected, onToggle, searchTerm }: ADCardProps) {
   }, [ad.AD_Number]);
 
   return (
-    <div
-      className="ad-card group relative flex flex-col overflow-hidden rounded-2xl"
+    <Link
+      href={{
+        pathname: `/ads/${encodeURIComponent(ad.AD_Number)}`,
+        query: {
+          source: ad.Source,
+          pdf: ad.PDF_Link,
+          subject: ad.Subject,
+          make: ad.Make,
+          model: ad.Model,
+          effective: ad.Effective_Date,
+          status: ad.Status,
+          product: ad.Product_Type,
+        },
+      }}
+      className="ad-card group relative flex h-full min-h-[196px] cursor-pointer flex-col overflow-hidden rounded-2xl"
       style={{
         background: isSelected ? "rgba(232,184,75,0.05)" : "rgba(255,255,255,0.025)",
         border: isSelected
@@ -112,6 +126,7 @@ export function ADCard({ ad, isSelected, onToggle, searchTerm }: ADCardProps) {
             onClick={handleCopy}
             className="ad-card-actions cursor-pointer rounded p-1 text-white/20 hover:bg-white/[0.07] hover:text-white/60"
             aria-label="Copy AD number"
+            onClickCapture={(e) => e.preventDefault()}
           >
             <Copy size={12} />
           </button>
@@ -144,27 +159,34 @@ export function ADCard({ ad, isSelected, onToggle, searchTerm }: ADCardProps) {
         </p>
 
         {/* Row 5: Actions (appear on hover) */}
-        <div className="ad-card-actions flex items-center gap-2">
+        <div className="ad-card-actions flex min-h-9 items-center gap-2">
           {ad.PDF_Link && (
-            <a
-              href={ad.PDF_Link}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               className="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-medium text-white/60 transition-all hover:text-white"
               style={{
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.12)",
               }}
+              onClickCapture={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onClick={() => {
+                window.open(ad.PDF_Link, "_blank", "noopener,noreferrer");
+              }}
+              aria-label="Open PDF"
             >
               <FileText size={12} />
               View PDF
-            </a>
+            </button>
           )}
 
           <button
             type="button"
             onClick={() => onToggle(ad.AD_Number)}
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-medium transition-all"
+            onClickCapture={(e) => e.preventDefault()}
             style={
               isSelected
                 ? {
@@ -184,6 +206,6 @@ export function ADCard({ ad, isSelected, onToggle, searchTerm }: ADCardProps) {
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

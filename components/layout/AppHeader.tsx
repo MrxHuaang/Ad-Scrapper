@@ -3,19 +3,19 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Moon, Sun, LogOut, Sparkles, User } from "lucide-react";
+import Image from "next/image";
 import { useSidebar } from "@/components/providers/SidebarProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 
 function useTheme() {
-  const [theme, setThemeState] = useState<"dark" | "light">("dark");
-  useEffect(() => {
-    const stored = localStorage.getItem("zephr-theme") as "dark" | "light" | null;
-    if (stored === "light") {
-      document.documentElement.classList.add("light");
-      setThemeState("light");
-    }
-  }, []);
+  const [theme, setThemeState] = useState<"dark" | "light">(() => {
+    const stored =
+      typeof window !== "undefined"
+        ? (localStorage.getItem("zephr-theme") as "dark" | "light" | null)
+        : null;
+    return stored === "light" ? "light" : "dark";
+  });
   const toggle = useCallback(() => {
     setThemeState((prev) => {
       const next = prev === "dark" ? "light" : "dark";
@@ -65,7 +65,14 @@ function ProfileMenu() {
         style={{ background: "#1e1e1e", border: "1px solid #2e2e2e" }}
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          <Image
+            src={avatarUrl}
+            alt=""
+            width={28}
+            height={28}
+            unoptimized
+            className="h-full w-full object-cover"
+          />
         ) : (
           initials
         )}

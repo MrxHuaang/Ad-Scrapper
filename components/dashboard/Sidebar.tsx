@@ -1,67 +1,74 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState } from "react";
 import { 
   Search, 
   LayoutDashboard, 
   Bookmark, 
   BarChart3, 
-  Settings, 
   ChevronLeft, 
   Zap,
-  Moon,
-  Sun
+  Download,
+  Eye,
+  BellRing,
+  Newspaper,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileMenu } from "./ProfileMenu";
+import { useSidebar } from "@/components/providers/SidebarProvider";
 
-function useTheme() {
-  const [theme, setThemeState] = useState<"dark" | "light">("dark");
-  useEffect(() => {
-    const stored = localStorage.getItem("zephr-theme") as "dark" | "light" | null;
-    if (stored === "light") {
-      document.documentElement.classList.add("light");
-      setThemeState("light");
-    }
-  }, []);
-  const toggle = useCallback(() => {
-    setThemeState((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      if (next === "light") document.documentElement.classList.add("light");
-      else document.documentElement.classList.remove("light");
-      localStorage.setItem("zephr-theme", next);
-      return next;
-    });
-  }, []);
-  return { theme, toggle };
-}
+// Theme is now managed in SettingsModal with an explicit Apply step.
 
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onOpenSettings?: () => void;
 }
 
-const MENU_ITEMS = [
-  { id: "dashboard", label: "Overview", icon: LayoutDashboard },
-  { id: "search",    label: "Search ADs", icon: Search },
-  { id: "saved",     label: "Saved Items", icon: Bookmark },
-  { id: "analytics", label: "Analytics",  icon: BarChart3 },
-];
+const NAV_ITEMS = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "search", label: "ADs", icon: Search },
+  { id: "saved", label: "Saved searches", icon: Bookmark },
+  { id: "watchlist", label: "Watchlist", icon: Eye },
+  { id: "exports", label: "Exports", icon: Download },
+] as const;
 
-export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+const TOOL_ITEMS = [
+  { id: "alerts", label: "Alerts", icon: BellRing },
+  { id: "bulletins", label: "Bulletins", icon: Newspaper },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+] as const;
+
+export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { theme, toggle } = useTheme();
+  const { resultCount } = useSidebar();
+  const openSettings = onOpenSettings ?? undefined;
+
+  const authorities = useMemo(() => {
+    // Minimal “real data”: show configured authorities; counts show only once results are present in the app.
+    // We can’t access the full results array here without threading it through props,
+    // so we show a lightweight count summary using provider state for now.
+    // (Counts per authority will be populated in a follow-up pass via props.)
+    return [
+      { key: "FAA", label: "FAA", count: null as number | null },
+      { key: "EASA", label: "EASA", count: null as number | null },
+      { key: "TC", label: "Transport Canada", count: null as number | null },
+      { key: "ANAC", label: "ANAC Brasil", count: null as number | null },
+      { key: "ARG", label: "ANAC Argentina", count: null as number | null },
+      { key: "DGAC", label: "DGAC Chile", count: null as number | null },
+    ];
+  }, []);
 
   return (
+    <>
     <motion.div
-      animate={{ width: isCollapsed ? 80 : 260 }}
+      animate={{ width: isCollapsed ? 76 : 244 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative flex flex-col border-r border-white/5 bg-[#050505] p-4 h-full"
+      className="relative flex h-full flex-col border-r border-white/5 bg-[var(--surface)] px-3 py-3"
     >
       {/* Brand */}
-      <div className="mb-10 mt-2 flex items-center px-2">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10">
+      <div className="mb-5 mt-1 flex items-center px-1.5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10">
           <Zap size={20} className="text-[#e8b84b]" />
         </div>
         <AnimatePresence>
@@ -76,73 +83,130 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             </motion.span>
           )}
         </AnimatePresence>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-2">
-        {MENU_ITEMS.map((item) => {
-          const isActive = activeTab === item.id;
-          const Icon = item.icon;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => onTabChange(item.id)}
-              className={`btn-glass w-full justify-start ${isActive ? "btn-glass-active" : ""}`}
-              title={isCollapsed ? item.label : ""}
-            >
-              <Icon size={18} className={isActive ? "text-[#e8b84b]" : "text-white/40"} />
-              {!isCollapsed && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="whitespace-nowrap"
-                >
-                  {item.label}
-                </motion.span>
-              )}
-              {isActive && !isCollapsed && (
-                <motion.div 
-                  layoutId="active-dot"
-                  className="ml-auto h-1 w-1 rounded-full bg-[#e8b84b]" 
-                />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Footer Actions */}
-      <div className="mt-auto flex flex-col gap-1 border-t border-white/5 pt-4">
         <button
-          onClick={toggle}
-          className="btn-glass w-full justify-start text-white/40 hover:text-white"
-          title={isCollapsed ? (theme === "dark" ? "Dark Mode" : "Light Mode") : ""}
-        >
-          {theme === "dark" ? <Moon size={18} /> : <Sun size={18} />}
-          {!isCollapsed && <span>{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>}
-        </button>
-
-        <button className="btn-glass w-full justify-start">
-          <Settings size={18} className="text-white/40" />
-          {!isCollapsed && <span>Settings</span>}
-        </button>
-
-        <ProfileMenu isCollapsed={isCollapsed} />
-
-        {/* Collapse toggle */}
-        <button
+          type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="mt-4 flex h-8 w-8 items-center justify-center self-center rounded-full border border-white/10 bg-white/5 text-white/40 transition-colors hover:text-white"
+          className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={isCollapsed ? "Expand" : "Collapse"}
         >
           <motion.div
             animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
           >
             <ChevronLeft size={16} />
           </motion.div>
         </button>
       </div>
+
+      {/* Navigation */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin]">
+        <p className={isCollapsed ? "sr-only" : "px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20"}>
+          Navigation
+        </p>
+        <nav className="mt-2 flex flex-col gap-1">
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeTab === item.id;
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => onTabChange(item.id)}
+                className={[
+                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-[13px] transition-colors",
+                  isActive
+                    ? "bg-white/[0.06] text-white/85"
+                    : "text-white/55 hover:bg-white/[0.04] hover:text-white/80",
+                ].join(" ")}
+                title={isCollapsed ? item.label : ""}
+              >
+                <Icon size={18} className={isActive ? "text-[#e8b84b]" : "text-white/35"} />
+                {!isCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="whitespace-nowrap"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Authorities */}
+        {!isCollapsed && (
+          <div className="mt-5">
+            <p className="px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20">
+              Authorities
+            </p>
+            <div className="mt-2 rounded-2xl border border-white/5 bg-white/[0.02] p-2">
+              {authorities.map((a) => (
+                <div
+                  key={a.key}
+                  className="flex items-center justify-between rounded-xl px-2.5 py-1.5 text-[12px] text-white/45 hover:bg-white/[0.03]"
+                >
+                  <span className="truncate">{a.label}</span>
+                  <span className="tabular-nums text-white/25">
+                    {a.count != null ? a.count.toLocaleString() : "—"}
+                  </span>
+                </div>
+              ))}
+              <div className="mt-1 px-2.5 pb-1 text-[11px] text-white/20">
+                Current results:{" "}
+                <span className="text-white/35 tabular-nums">
+                  {resultCount.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tools */}
+        {!isCollapsed && (
+          <div className="mt-5">
+            <p className="px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20">
+              Tools
+            </p>
+          </div>
+        )}
+        <nav className={isCollapsed ? "mt-5 flex flex-col gap-1.5" : "mt-2 flex flex-col gap-1.5"}>
+          {TOOL_ITEMS.map((item) => {
+            const isActive = activeTab === item.id;
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onTabChange(item.id)}
+                className={[
+                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-[13px] transition-colors",
+                  isActive
+                    ? "bg-white/[0.06] text-white/85"
+                    : "text-white/55 hover:bg-white/[0.04] hover:text-white/80",
+                ].join(" ")}
+                title={isCollapsed ? item.label : ""}
+              >
+                <Icon size={18} className={isActive ? "text-[#e8b84b]" : "text-white/35"} />
+                {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+              </button>
+            );
+          })}
+        </nav>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-3 flex flex-col gap-1 border-t border-white/5 pt-3">
+        <ProfileMenu
+          isCollapsed={isCollapsed}
+          onOpenSettings={openSettings}
+        />
+      </div>
     </motion.div>
+    </>
   );
 }

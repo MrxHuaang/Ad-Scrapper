@@ -120,6 +120,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={handleCopy}
       className="ml-1 inline-flex cursor-pointer items-center rounded p-[3px] text-white/20 opacity-0 transition-all group-hover/row:opacity-100 hover:bg-white/[0.07] hover:text-white/70"
       aria-label="Copy"
+      onClickCapture={(e) => e.stopPropagation()}
     >
       <Copy size={10} />
     </button>
@@ -131,14 +132,15 @@ export function ResultsTable({
   results, selectedIds, onToggleSelect, sortField, sortOrder, onSort, searchTerm,
 }: ResultsTableProps) {
   const selectAllRef = useRef<HTMLInputElement>(null);
-  if (results.length === 0) return null;
-
-  const allSelected = results.every((r) => selectedIds.has(r.AD_Number));
-  const someSelected = !allSelected && results.some((r) => selectedIds.has(r.AD_Number));
+  const allSelected = results.length > 0 && results.every((r) => selectedIds.has(r.AD_Number));
+  const someSelected =
+    results.length > 0 && !allSelected && results.some((r) => selectedIds.has(r.AD_Number));
 
   useEffect(() => {
     if (selectAllRef.current) selectAllRef.current.indeterminate = someSelected;
   }, [someSelected]);
+
+  if (results.length === 0) return null;
 
   function handleSelectAll() {
     if (allSelected) results.forEach((r) => onToggleSelect(r.AD_Number));
@@ -160,7 +162,7 @@ export function ResultsTable({
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                  className="h-3.5 w-3.5 cursor-pointer accent-white/80"
+                  className="h-4 w-4 cursor-pointer rounded-md border border-white/15 bg-white/[0.03] accent-[#e8b84b] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none focus:ring-2 focus:ring-white/10"
                 />
               </th>
               {/* Source stripe placeholder */}
@@ -188,10 +190,23 @@ export function ResultsTable({
               return (
                 <tr
                   key={ad.AD_Number}
-                  className="group/row transition-colors"
+                  className="group/row cursor-pointer transition-colors"
                   style={{
                     background: isSelected ? "#141414" : undefined,
                     borderBottom: "1px solid #141414",
+                  }}
+                  onClick={() => {
+                    const qs = new URLSearchParams({
+                      source: ad.Source ?? "",
+                      pdf: ad.PDF_Link ?? "",
+                      subject: ad.Subject ?? "",
+                      make: ad.Make ?? "",
+                      model: ad.Model ?? "",
+                      effective: ad.Effective_Date ?? "",
+                      status: ad.Status ?? "",
+                      product: ad.Product_Type ?? "",
+                    });
+                    window.location.href = `/ads/${encodeURIComponent(ad.AD_Number)}?${qs.toString()}`;
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected) e.currentTarget.style.background = "#111111";
@@ -206,7 +221,8 @@ export function ResultsTable({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => onToggleSelect(ad.AD_Number)}
-                      className="h-3.5 w-3.5 cursor-pointer accent-white/80"
+                      className="h-4 w-4 cursor-pointer rounded-md border border-white/15 bg-white/[0.03] accent-[#e8b84b] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none focus:ring-2 focus:ring-white/10"
+                      onClick={(e) => e.stopPropagation()}
                     />
                   </td>
 

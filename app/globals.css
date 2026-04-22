@@ -7,6 +7,7 @@
 /* ===== Zephr Design Tokens — Resend style ===== */
 :root {
   /* ── Base ── */
+  /* Global defaults (landing + app) keep the current black-first look. */
   --bg: #000000;
   --surface: #0a0a0a;
   --surface-2: #141414;
@@ -48,10 +49,10 @@
   --zl-spectrum-glow: color-mix(in srgb, var(--zl-spectrum-from) 18%, transparent);
 
   /* ── Landing aliases ── */
-  --zl-bg: #000000;
-  --zl-bg-alt: #0a0a0a;
-  --zl-bg-card: #141414;
-  --zl-bg-hover: #1a1a1a;
+  --zl-bg: var(--bg);
+  --zl-bg-alt: var(--surface);
+  --zl-bg-card: var(--surface-2);
+  --zl-bg-hover: var(--surface-3);
   --zl-blue: #3B82F6;
   --zl-gold: #e8b84b;
   --zl-gold-hover: #d4a040;
@@ -59,25 +60,25 @@
   --zl-green: #00d47f;
   --zl-green-dim: rgba(0, 212, 127, 0.12);
   --zl-green-glow: rgba(0, 212, 127, 0.07);
-  --zl-text: #ffffff;
-  --zl-text-2: #a1a1a1;
-  --zl-text-3: #737373;
+  --zl-text: var(--text-1);
+  --zl-text-2: var(--text-2);
+  --zl-text-3: var(--text-3);
 
   /* ── shadcn tokens ── */
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #0a0a0a;
-  --card-foreground: #ffffff;
-  --popover: #141414;
-  --popover-foreground: #ffffff;
+  --background: var(--bg);
+  --foreground: var(--text-1);
+  --card: var(--surface);
+  --card-foreground: var(--text-1);
+  --popover: var(--surface-2);
+  --popover-foreground: var(--text-1);
   --primary: #ffffff;
   --primary-foreground: #000000;
-  --secondary: #141414;
-  --secondary-foreground: #ffffff;
-  --muted: #141414;
-  --muted-foreground: #a1a1a1;
-  --accent: #141414;
-  --accent-foreground: #ffffff;
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--text-1);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-2);
+  --accent: var(--surface-2);
+  --accent-foreground: var(--text-1);
   --destructive: #ef4444;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.08);
@@ -99,6 +100,33 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #2563eb;
+}
+
+/* App-only theme (Claude-like neutral dark), scoped to (app) layout */
+.app-theme {
+  --bg: #0f1012;
+  --surface: #151619;
+  --surface-2: #1a1b1f;
+  --surface-3: #202126;
+  --border: rgba(255, 255, 255, 0.11);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --text-1: rgba(255, 255, 255, 0.92);
+  --text-2: rgba(255, 255, 255, 0.70);
+  --text-3: rgba(255, 255, 255, 0.48);
+
+  --background: var(--bg);
+  --foreground: var(--text-1);
+  --card: var(--surface);
+  --card-foreground: var(--text-1);
+  --popover: var(--surface-2);
+  --popover-foreground: var(--text-1);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--text-1);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-2);
+  --accent: var(--surface-2);
+  --accent-foreground: var(--text-1);
+  --input: rgba(255, 255, 255, 0.10);
 }
 
 /* Light theme override */
@@ -270,9 +298,10 @@
   align-items: center;
   gap: 10px;
   overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  /* More sober (Notion/Claude-like) */
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(12px) saturate(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   color: var(--text-2);
@@ -287,22 +316,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 20%,
-    rgba(232, 184, 75, 0.1) 50%,
-    transparent 80%
-  );
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
+  background: none;
+  transform: none;
+  transition: none;
 }
 
 .btn-glass-active {
-  background: rgba(232, 184, 75, 0.08);
-  border-color: rgba(232, 184, 75, 0.3);
-  color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 
-              inset 0 1px 1px rgba(232, 184, 75, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(232, 184, 75, 0.28);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
 }
 
 .btn-glass-active .zl-text-spectrum {
@@ -310,13 +333,13 @@
 }
 
 .btn-glass:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .btn-glass:hover::before {
-  transform: translateX(100%);
+  transform: none;
 }
 
 .btn-glass:active {
@@ -384,15 +407,10 @@
 
 /* ───── AD Card hover glow ───── */
 .ad-card {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .ad-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 0 1px rgba(232, 184, 75, 0.22),
-              0 8px 40px rgba(232, 184, 75, 0.1),
-              0 2px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
 .ad-card:hover .ad-card-actions {
   opacity: 1;

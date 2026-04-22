@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
-
-export const metadata: Metadata = { title: "Pricing — Zephr" };
+import { createClient } from "@/lib/supabase/client";
+import { showToast } from "@/hooks/useToast";
+import { useRouter } from "next/navigation";
 
 const PLANS = [
   {
@@ -59,6 +61,51 @@ const PLANS = [
 ];
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleCheckout = async (planId: string) => {
+    if (planId === "free") {
+      router.push("/login");
+      return;
+    }
+
+    if (planId === "team" && PLANS.find(p => p.id === "team")?.cta === "Contact Sales") {
+      window.location.href = "mailto:contact@zephr.com";
+      return;
+    }
+
+    try {
+      setLoading(planId);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        router.push("/login?returnTo=/pricing");
+        return;
+      }
+
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        showToast(data.error || "Something went wrong", "error");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Could not initiate checkout", "error");
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -121,16 +168,17 @@ export default function PricingPage() {
                   )}
                 </div>
 
-                <Link
-                  href={plan.ctaHref}
-                  className={`mb-8 w-full rounded-lg py-2.5 text-center text-sm font-semibold transition-all duration-200 ${
+                <button
+                  onClick={() => handleCheckout(plan.id)}
+                  disabled={loading !== null}
+                  className={`mb-8 w-full rounded-lg py-2.5 text-center text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                     plan.featured
                       ? "bg-white text-black hover:bg-[#e5e5e5]"
                       : "border border-white/10 bg-transparent text-white hover:border-white/20 hover:bg-white/[0.04]"
                   }`}
                 >
-                  {plan.cta}
-                </Link>
+                  {loading === plan.id ? "Connecting..." : plan.cta}
+                </button>
 
                 <div className="border-t border-white/[0.06] pt-6">
                   <p className="mb-4 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#737373]">

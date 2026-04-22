@@ -16,10 +16,24 @@ const inputCls =
   "w-full rounded-xl border border-white/[0.08] bg-[#0d0d0d] px-4 py-3 text-sm text-white placeholder:text-[#555] transition-colors focus:border-white/20 focus:bg-[#141414] focus:outline-none focus:ring-0";
 
 const oauthBtnCls =
-  "flex items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#0d0d0d] py-3 text-sm font-medium text-[#d4d4d4] transition-colors hover:border-white/[0.15] hover:bg-[#141414] hover:text-white";
+  "flex cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#0d0d0d] py-3 text-sm font-medium text-[#d4d4d4] transition-colors hover:border-white/[0.15] hover:bg-[#141414] hover:text-white";
 
 const primaryBtnCls =
-  "mt-2 w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 disabled:border disabled:border-white/[0.04] disabled:bg-white/[0.02] disabled:text-[#444] disabled:shadow-none bg-white text-black hover:bg-[#e5e5e5] shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)]";
+  "mt-2 w-full cursor-pointer rounded-xl py-3 text-sm font-semibold transition-all duration-200 disabled:border disabled:border-white/[0.04] disabled:bg-white/[0.02] disabled:text-[#444] disabled:shadow-none bg-white text-black hover:bg-[#e5e5e5] shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)]";
+
+function LoadingDots() {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-current opacity-60"
+          style={{ animationDelay: `${i * 120}ms`, animationDuration: "700ms" }}
+        />
+      ))}
+    </span>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,6 +43,7 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<null | "google">(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -40,6 +55,8 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
+    if (oauthLoading) return;
+    setOauthLoading("google");
     await getSupabase(sbRef).auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${location.origin}/auth/callback` },
@@ -84,9 +101,19 @@ export default function LoginPage() {
             type="button"
             onClick={handleGoogle}
             className={oauthBtnCls}
+            disabled={oauthLoading === "google"}
           >
-            <GoogleIcon />
-            Log in with Google
+            {oauthLoading === "google" ? (
+              <>
+                <LoadingDots />
+                <span className="text-white/80">Loading</span>
+              </>
+            ) : (
+              <>
+                <GoogleIcon />
+                Log in with Google
+              </>
+            )}
           </button>
           <button
             type="button"
@@ -148,7 +175,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#737373] hover:text-white transition-colors"
                 aria-label="Toggle password visibility"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

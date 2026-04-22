@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, X, List, LayoutGrid, Zap } from "lucide-react";
+import { Clock, X, Zap } from "lucide-react";
 import type { ADResult, SearchParams } from "@/types";
 import type { SourceKey } from "@/types";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAdSearch } from "@/hooks/useAdSearch";
 import { useSidebar } from "@/components/providers/SidebarProvider";
 import { showToast } from "@/hooks/useToast";
@@ -17,8 +18,11 @@ import { ADCard } from "@/components/search/ADCard";
 import { Pagination } from "@/components/search/Pagination";
 import { BulkBar } from "@/components/search/BulkBar";
 import { getSortedResults } from "@/components/search/searchUtils";
-import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCards } from "@/components/dashboard/StatCards";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { SOURCE_KEYS } from "@/types";
+import { listMySavedAds } from "@/lib/ads/adPersistence";
+import Link from "next/link";
 
 /* ───── Source pill config ───── */
 const SOURCES: { key: SourceKey; label: string; flag?: string; color?: string; comingSoon?: boolean }[] = [
@@ -48,6 +52,8 @@ const SESSION_TTL = 30 * 60 * 1000;
 
 /* ───── Page ───── */
 export default function SearchPage() {
+  const router = useRouter();
+  const sp = useSearchParams();
   const { search, results: sseResults, status, errors, elapsedMs } = useAdSearch();
   const { selectedSource, setSelectedSource, setSearchStatus, setResultCount, setElapsedMs: setSidebarMs } = useSidebar();
 
@@ -64,11 +70,48 @@ export default function SearchPage() {
   const [quickFilter, setQuickFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [lastSearchMs, setLastSearchMs] = useState<number | null>(null);
-  const [lastErrors, setLastErrors] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
   const [restoredCount, setRestoredCount] = useState(0);
   const [restoredAgo, setRestoredAgo] = useState(0);
+  const [dashboardQuery, setDashboardQuery] = useState("");
+  const [savedAds, setSavedAds] = useState<Awaited<ReturnType<typeof listMySavedAds>>>([]);
+  const [savedLoading, setSavedLoading] = useState(false);
+
+  // Restore tab from URL (so Back returns where user was).
+  useEffect(() => {
+    const tab = sp.get("tab");
+    if (!tab) return;
+    setActiveTab(tab);
+  }, [sp]);
+
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      setActiveTab(tab);
+      router.replace(`/search?tab=${encodeURIComponent(tab)}`);
+    },
+    [router],
+  );
+
+  useEffect(() => {
+    if (activeTab !== "saved") return;
+    let cancelled = false;
+    setSavedLoading(true);
+    (async () => {
+      try {
+        const rows = await listMySavedAds();
+        if (!cancelled) setSavedAds(rows);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Could not load saved ADs";
+        showToast(msg, "error");
+      } finally {
+        if (!cancelled) setSavedLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab]);
 
   /* Restore from sessionStorage */
   useEffect(() => {
@@ -99,7 +142,6 @@ export default function SearchPage() {
     if (status === "done" || status === "error") {
       setIsSearching(false);
       setLastSearchMs(elapsedMs);
-      setLastErrors(errors);
       if (sseResults.length > 0) {
         try {
           sessionStorage.setItem(SESSION_KEY, JSON.stringify({ results: sseResults, timestamp: Date.now() }));
@@ -124,7 +166,23 @@ export default function SearchPage() {
   }, [quickFilter, results]);
 
   const activeResults = filteredResults ?? results;
-  const sorted = useMemo(() => getSortedResults(activeResults, sortField, sortOrder, searchTerm), [activeResults, sortField, sortOrder, searchTerm]);
+  const topbarFiltered = useMemo(() => {
+    const q = dashboardQuery.trim().toLowerCase();
+    if (!q) return activeResults;
+    return activeResults.filter((r) => {
+      return (
+        r.AD_Number?.toLowerCase().includes(q) ||
+        r.Make?.toLowerCase().includes(q) ||
+        r.Model?.toLowerCase().includes(q) ||
+        r.Subject?.toLowerCase().includes(q)
+      );
+    });
+  }, [activeResults, dashboardQuery]);
+
+  const sorted = useMemo(
+    () => getSortedResults(topbarFiltered, sortField, sortOrder, searchTerm),
+    [topbarFiltered, sortField, sortOrder, searchTerm],
+  );
   const totalPages = Math.ceil(sorted.length / pageSize);
   const pageResults = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -132,7 +190,6 @@ export default function SearchPage() {
     setResults([]);
     setFilteredResults(null);
     setSelectedIds(new Set());
-    setLastErrors([]);
     setHasSearched(true);
     setShowRestoreBanner(false);
     setCurrentPage(1);
@@ -197,13 +254,15 @@ export default function SearchPage() {
   const activeSource = SOURCES.find((s) => s.key === selectedSource);
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-black">
-      {/* ══ Dashboard Sidebar ══ */}
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* ══ Main Content ══ */}
-      <main className="flex-1 overflow-y-auto scrollbar-custom">
-        <div className="mx-auto max-w-[1400px] px-8 py-8">
+    <DashboardShell
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      query={dashboardQuery}
+      onQueryChange={setDashboardQuery}
+      results={topbarFiltered}
+      configuredAuthorities={SOURCE_KEYS.filter((k) => k !== "all").map((k) => k)}
+    >
+      <div className="mx-auto max-w-[1400px] px-8 py-8">
           
           {/* Dashboard Header */}
           <header className="mb-10 flex items-end justify-between">
@@ -213,24 +272,23 @@ export default function SearchPage() {
                 animate={{ opacity: 1, x: 0 }}
                 className="font-serif text-4xl font-semibold text-white"
               >
-                {activeTab === "search" ? "Search Engine" : "Fleet Overview"}
+                {activeTab === "search" ? "Dashboard" : "Fleet overview"}
               </motion.h1>
-              <p className="mt-1 text-sm text-white/30 font-medium">
-                Tuesday, April 21 · <span className="text-[#e8b84b]">Updated 4h ago</span>
-              </p>
             </div>
             
             <div className="flex items-center gap-3">
               <button className="btn-glass btn-sm border-white/5 bg-white/[0.02] text-white/40">
-                Export Fleet Report
+                Export report
               </button>
             </div>
           </header>
 
           {/* Stats Overview */}
-          <div className="mb-12">
-            <StatCards />
-          </div>
+          {activeTab === "dashboard" && (
+            <div className="mb-12">
+              <StatCards results={topbarFiltered} />
+            </div>
+          )}
 
           {activeTab === "search" && (
             <motion.div
@@ -304,7 +362,13 @@ export default function SearchPage() {
                     <div className="mb-6">
                       <ResultsHeader
                         total={results.length}
-                        filtered={filteredResults ? filteredResults.length : null}
+                        filtered={
+                          filteredResults
+                            ? filteredResults.length
+                            : dashboardQuery.trim()
+                              ? topbarFiltered.length
+                              : null
+                        }
                         lastSearchMs={lastSearchMs}
                         viewMode={viewMode}
                         onViewChange={setViewMode}
@@ -370,23 +434,86 @@ export default function SearchPage() {
             </motion.div>
           )}
 
-          {activeTab !== "search" && (
+          {activeTab === "saved" && (
+            <div className="pb-24">
+              <div className="glass rounded-2xl border-white/5 p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-white/80">Saved ADs</p>
+                    <p className="mt-1 text-xs text-white/35">
+                      Your saved directives, synced to your account.
+                    </p>
+                  </div>
+                  <p className="text-xs text-white/35">
+                    {savedLoading ? "Loading…" : `${savedAds.length} saved`}
+                  </p>
+                </div>
+
+                <div className="mt-4 divide-y divide-white/5 overflow-hidden rounded-xl border border-white/5">
+                  {savedLoading ? (
+                    <div className="p-4 text-sm text-white/40">Loading saved ADs…</div>
+                  ) : savedAds.length === 0 ? (
+                    <div className="p-4 text-sm text-white/40">
+                      No saved ADs yet. Open an AD and click “Save”.
+                    </div>
+                  ) : (
+                    savedAds.map((row) => {
+                      const qs = new URLSearchParams();
+                      qs.set("source", row.source);
+                      qs.set("from", "saved");
+                      if (row.pdf_link) qs.set("pdf", row.pdf_link);
+                      if (row.subject) qs.set("subject", row.subject);
+                      if (row.make) qs.set("make", row.make);
+                      if (row.model) qs.set("model", row.model);
+                      if (row.effective_date) qs.set("effective", row.effective_date);
+                      if (row.status) qs.set("status", row.status);
+                      if (row.product_type) qs.set("product", row.product_type);
+
+                      return (
+                        <Link
+                          key={`${row.source}:${row.ad_number}`}
+                          href={`/ads/${encodeURIComponent(row.ad_number)}?${qs.toString()}`}
+                          className="group flex cursor-pointer items-start justify-between gap-4 bg-white/[0.01] p-4 hover:bg-white/[0.03]"
+                        >
+                          <div className="min-w-0">
+                            <p className="font-mono text-sm text-white/85">{row.ad_number}</p>
+                            <p className="mt-1 truncate text-sm text-white/45">
+                              {row.subject || "No subject"}
+                            </p>
+                            <p className="mt-2 text-[11px] text-white/30">
+                              {(row.source || "—") +
+                                (row.make ? ` · ${row.make}` : "") +
+                                (row.model ? ` · ${row.model}` : "") +
+                                (row.effective_date ? ` · Effective ${row.effective_date}` : "")}
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-xs text-white/25 group-hover:text-white/45">
+                            Open →
+                          </div>
+                        </Link>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab !== "search" && activeTab !== "saved" && (
             <div className="flex flex-col items-center justify-center py-32 opacity-20">
               <Zap size={64} className="mb-6 text-[#e8b84b]" />
               <p className="text-xl font-serif">Module coming soon</p>
             </div>
           )}
         </div>
-      </main>
-
       <BulkBar
         selectedCount={selectedIds.size}
-        hasActiveFilter={quickFilter.length > 0}
+        hasActiveFilter={quickFilter.length > 0 || dashboardQuery.trim().length > 0}
         onExportCsv={() => exportSelected("csv")}
         onExportExcel={() => exportSelected("excel")}
         onExportZip={() => showToast("PDF bulk download coming soon", "info")}
         onDeselect={() => setSelectedIds(new Set())}
       />
-    </div>
+    </DashboardShell>
   );
 }

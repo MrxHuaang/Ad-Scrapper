@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MoreHorizontal, LogOut, User, Sparkles } from "lucide-react";
+import Image from "next/image";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 
@@ -46,9 +47,12 @@ export function ProfileStrip() {
       <div className="flex items-center gap-[10px]">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--surface-2)]">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt=""
+              width={32}
+              height={32}
+              unoptimized
               className="h-full w-full object-cover"
             />
           ) : (

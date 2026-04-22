@@ -2,12 +2,11 @@
 
 import { type ReactNode } from "react";
 import { SidebarProvider } from "@/components/providers/SidebarProvider";
-import { AppHeader } from "@/components/layout/AppHeader";
 import { ToastContainer } from "@/components/ui/Toast";
 
 function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-dvh bg-black">
+    <div className="app-theme min-h-dvh bg-[var(--bg)]">
       <main className="h-dvh">{children}</main>
       <ToastContainer />
     </div>

@@ -1,16 +1,83 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, AlertCircle, Bookmark, Database } from "lucide-react";
+import { Database, RefreshCw, Globe2, Activity } from "lucide-react";
+import type { ADResult } from "@/types";
+import { SOURCE_SHORT, normalizeSource } from "@/components/search/searchUtils";
 
-const STATS = [
-  { label: "Total Directives", value: "21,450", icon: Database, change: "+12 today" },
-  { label: "Critical Alerts",  value: "84",     icon: AlertCircle, change: "Requires action", color: "#ef4444" },
-  { label: "Saved for Fleet", value: "128",    icon: Bookmark, change: "Across 4 models" },
-  { label: "Index Quality",   value: "99.8%",  icon: TrendingUp, change: "Uptime 100%" },
-];
+function isSameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
-export function StatCards() {
+function parseDate(d: string | undefined): Date | null {
+  if (!d) return null;
+  const dt = new Date(d);
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
+
+export function StatCards({ results }: { results: ADResult[] }) {
+  const kpis = useMemo(() => {
+    const total = results.length;
+
+    const byAuthority: Record<string, number> = {};
+    let updatedToday = 0;
+    const today = new Date();
+
+    for (const r of results) {
+      const key = normalizeSource(r.Source);
+      const short = SOURCE_SHORT[key] ?? key;
+      byAuthority[short] = (byAuthority[short] ?? 0) + 1;
+
+      const dt = parseDate(r.Effective_Date);
+      if (dt && isSameDay(dt, today)) updatedToday += 1;
+    }
+
+    const activeAuthorities = Object.keys(byAuthority).length;
+    const configuredAuthorities = 9; // SOURCE_KEYS excluding "all"
+    const coverage = configuredAuthorities
+      ? (activeAuthorities / configuredAuthorities) * 100
+      : 0;
+
+    return {
+      total,
+      updatedToday,
+      activeAuthorities,
+      coverage,
+    };
+  }, [results]);
+
+  const STATS = [
+    {
+      label: "ADs indexed",
+      value: kpis.total.toLocaleString(),
+      icon: Database,
+      change: results.length ? "Current search dataset" : "Run a search to see KPIs",
+    },
+    {
+      label: "Updated today",
+      value: kpis.updatedToday.toLocaleString(),
+      icon: RefreshCw,
+      change: "Based on Effective_Date",
+    },
+    {
+      label: "Authorities",
+      value: kpis.activeAuthorities.toLocaleString(),
+      icon: Globe2,
+      change: "With data in the current set",
+    },
+    {
+      label: "Global coverage",
+      value: `${Math.round(kpis.coverage * 10) / 10}%`,
+      icon: Activity,
+      change: "Authorities with data / configured",
+    },
+  ] as const;
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {STATS.map((stat, i) => (
@@ -36,9 +103,7 @@ export function StatCards() {
           </div>
 
           <div className="mt-2 text-[11px] font-medium text-white/20">
-            <span style={stat.color ? { color: stat.color, opacity: 0.8 } : {}}>
-              {stat.change}
-            </span>
+            <span>{stat.change}</span>
           </div>
         </motion.div>
       ))}
