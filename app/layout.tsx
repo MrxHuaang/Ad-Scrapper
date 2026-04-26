@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { LenisProvider } from "@/components/providers/LenisProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,9 +43,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} antialiased`}
     >
       <body className="min-h-dvh overflow-x-hidden bg-[var(--bg)] text-[var(--text-1)]">
-        <AuthProvider>
-          <LenisProvider>{children}</LenisProvider>
-        </AuthProvider>
+        <TooltipProvider delay={200}>
+          <AuthProvider>
+            <LenisProvider>{children}</LenisProvider>
+          </AuthProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

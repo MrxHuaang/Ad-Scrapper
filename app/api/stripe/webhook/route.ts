@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import type Stripe from "stripe";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ""
-);
-
 export async function POST(req: Request) {
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+  );
+
   const stripe = getStripe();
   if (!stripe) {
     return new NextResponse("Stripe is not configured", { status: 501 });

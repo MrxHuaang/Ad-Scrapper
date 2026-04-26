@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { RealtimeAvatarStack } from "@/components/realtime-avatar-stack";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -47,6 +48,14 @@ export function TrustBar() {
                 </span>
               ))}
             </div>
+          </div>
+
+          {/* Realtime presence — same Supabase Realtime room for everyone on the landing page */}
+          <div className="flex flex-col items-center gap-2.5">
+            <RealtimeAvatarStack roomName="zephr:landing" />
+            <p className="text-[11px] font-medium tracking-wide text-white/25">
+              Live on this page
+            </p>
           </div>
 
           {/* Stats grid — gaps use page bg (black) for a seamless field */}
