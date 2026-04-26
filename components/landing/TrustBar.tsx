@@ -50,10 +50,10 @@ export function TrustBar() {
             </div>
           </div>
 
-          {/* Realtime presence — same Supabase Realtime room for everyone on the landing page */}
-          <div className="flex flex-col items-center gap-2.5">
+          {/* Realtime presence: right below role pills, above the stats. Scroll past the hero to see it. */}
+          <div className="flex min-h-[2.5rem] flex-col items-center gap-2.5">
             <RealtimeAvatarStack roomName="zephr:landing" />
-            <p className="text-[11px] font-medium tracking-wide text-white/25">
+            <p className="text-center text-[11px] font-medium tracking-wide text-white/45">
               Live on this page
             </p>
           </div>

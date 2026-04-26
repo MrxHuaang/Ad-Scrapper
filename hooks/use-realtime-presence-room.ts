@@ -7,8 +7,6 @@ import { useCurrentUserImage } from '@/hooks/use-current-user-image'
 import { useCurrentUserName } from '@/hooks/use-current-user-name'
 import { createClient } from '@/lib/supabase/client'
 
-const supabase = createClient()
-
 export type RealtimeUser = {
   id: string
   name: string
@@ -22,6 +20,7 @@ export const useRealtimePresenceRoom = (roomName: string) => {
   const [users, setUsers] = useState<Record<string, RealtimeUser>>({})
 
   useEffect(() => {
+    const supabase = createClient()
     const room = supabase.channel(roomName)
 
     room
@@ -40,7 +39,7 @@ export const useRealtimePresenceRoom = (roomName: string) => {
         if (status === REALTIME_SUBSCRIBE_STATES.SUBSCRIBED) {
           await room.track({
             name: currentUserName,
-            image: currentUserImage,
+            image: currentUserImage ?? "",
           })
         } else {
           setUsers({})
@@ -48,7 +47,7 @@ export const useRealtimePresenceRoom = (roomName: string) => {
       })
 
     return () => {
-      room.unsubscribe()
+      void room.unsubscribe()
     }
   }, [roomName, currentUserName, currentUserImage])
 
