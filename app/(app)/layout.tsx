@@ -5,8 +5,8 @@ import { ToastContainer } from "@/components/ui/Toast";
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="app-theme min-h-dvh bg-[var(--bg)]">
-        <main className="h-dvh">{children}</main>
+      <div className="app-theme h-dvh bg-[var(--bg)] overflow-hidden">
+        {children}
         <ToastContainer />
       </div>
     </SidebarProvider>

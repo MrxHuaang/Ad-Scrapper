@@ -46,6 +46,11 @@ export function DashboardShell({
           setSettingsOpen(true);
           setMobileNavOpen(false);
         }}
+        onOpenBilling={() => {
+          setSettingsTab("billing");
+          setSettingsOpen(true);
+          setMobileNavOpen(false);
+        }}
         mobileOpen={mobileNavOpen}
         onMobileClose={() => setMobileNavOpen(false)}
       />

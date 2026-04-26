@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const AUTHORITIES = [
-  { code: "FAA", name: "Federal Aviation Administration", region: "United States", count: "10,000+" },
-  { code: "EASA", name: "EU Aviation Safety Agency", region: "Europe", count: "8,000+" },
-  { code: "TC", name: "Transport Canada Civil Aviation", region: "Canada", count: "3,000+" },
-  { code: "ANAC", name: "Agência Nacional de Aviação Civil", region: "Brazil", count: "450+" },
+  { code: "FAA", name: "Federal Aviation Administration", region: "United States", count: "5,006" },
+  { code: "EASA", name: "EU Aviation Safety Agency", region: "Europe", count: "18,199" },
+  { code: "TC", name: "Transport Canada Civil Aviation", region: "Canada", count: "4,719" },
+  { code: "ANAC", name: "Agência Nacional de Aviação Civil", region: "Brazil", count: "450" },
 ];
 
 export function AuthorityCoverage() {
@@ -46,7 +46,7 @@ export function AuthorityCoverage() {
           transition={{ duration: 0.6, delay: 0.1, ease }}
           className="mb-14 flex items-center gap-3"
         >
-          <span className="text-3xl font-bold text-white">21,450+</span>
+          <span className="text-3xl font-bold text-white">28,431</span>
           <span className="text-sm text-[#737373]">directives indexed</span>
         </motion.div>
 

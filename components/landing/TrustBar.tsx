@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const STATS = [
-  { value: "21,450+", label: "Directives indexed" },
+  { value: "28,000+", label: "Directives indexed" },
   { value: "6", label: "Regulatory authorities" },
   { value: "24 h", label: "Update cycle" },
   { value: "100%", label: "Official source links" },

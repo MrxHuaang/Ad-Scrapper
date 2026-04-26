@@ -6,25 +6,25 @@ const AUTHORITIES = [
     code: "FAA",
     name: "Federal Aviation Administration",
     region: "United States",
-    count: "10,000+",
+    count: "5,006",
   },
   {
     code: "EASA",
     name: "European Union Aviation Safety Agency",
     region: "Europe",
-    count: "8,000+",
+    count: "18,199",
   },
   {
     code: "TC",
     name: "Transport Canada Civil Aviation",
     region: "Canada",
-    count: "3,000+",
+    count: "4,719",
   },
   {
     code: "ANAC",
     name: "Agência Nacional de Aviação Civil",
     region: "Brazil",
-    count: "450+",
+    count: "450",
   },
   {
     code: "→",
@@ -37,7 +37,7 @@ const AUTHORITIES = [
 const BENEFITS = [
   {
     title: "Instant full-text search",
-    body: "Query 21,000+ ADs across all authorities in milliseconds. Filter by aircraft type, effective date, or regulation number.",
+    body: "Query 28,000+ ADs across all authorities in milliseconds. Filter by aircraft type, effective date, or regulation number.",
   },
   {
     title: "Automatic compliance alerts",

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
+import { ZephrLogo } from "@/components/icons/ZephrLogo";
 
 function getSupabase(ref: React.RefObject<SupabaseClient | null>) {
   if (!ref.current) ref.current = createClient();
@@ -77,8 +78,8 @@ export default function LoginPage() {
       <div className="mx-auto w-full max-w-[380px]">
         {/* Logo mark */}
         <div className="mb-6 flex justify-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#141414] text-base font-bold text-white">
-            Z
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#141414] shadow-[0_0_24px_-8px_var(--zl-spectrum-glow)]">
+            <ZephrLogo width={28} height={28} />
           </div>
         </div>
 

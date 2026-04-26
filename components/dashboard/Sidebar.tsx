@@ -1,27 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Search,
   LayoutDashboard,
   Bookmark,
   BarChart3,
-  ChevronLeft,
-  Zap,
   Download,
   Eye,
   BellRing,
   Newspaper,
   Plane,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileMenu } from "./ProfileMenu";
 import { useSidebar } from "@/components/providers/SidebarProvider";
+import { ZephrLogo } from "@/components/icons/ZephrLogo";
+import { NotificationPopover } from "./NotificationPopover";
 
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onOpenSettings?: () => void;
+  onOpenBilling?: () => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }
@@ -30,7 +33,7 @@ const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "search", label: "ADs", icon: Search },
   { id: "aircraft", label: "Aircraft", icon: Plane },
-  { id: "saved", label: "Saved searches", icon: Bookmark },
+  { id: "saved", label: "Saved", icon: Bookmark },
   { id: "watchlist", label: "Watchlist", icon: Eye },
   { id: "exports", label: "Exports", icon: Download },
 ] as const;
@@ -41,151 +44,47 @@ const TOOL_ITEMS = [
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ] as const;
 
-export function Sidebar({ activeTab, onTabChange, onOpenSettings, mobileOpen = false, onMobileClose }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { resultCount } = useSidebar();
-  const openSettings = onOpenSettings ?? undefined;
+const HEADER_H = 44; // px — height of the always-visible header strip
 
-  const authorities = useMemo(() => {
-    return [
-      { key: "FAA", label: "FAA", count: null as number | null },
-      { key: "EASA", label: "EASA", count: null as number | null },
-      { key: "TC", label: "Transport Canada", count: null as number | null },
-      { key: "ANAC", label: "ANAC Brasil", count: null as number | null },
-      { key: "ARG", label: "ANAC Argentina", count: null as number | null },
-      { key: "DGAC", label: "DGAC Chile", count: null as number | null },
-    ];
-  }, []);
-
+function NavItems({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}) {
   return (
     <>
-      {/* Mobile backdrop */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
-          onClick={onMobileClose}
-          aria-hidden="true"
-        />
-      )}
-
-      <motion.div
-        animate={{ width: isCollapsed ? 76 : 244 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className={[
-          "relative flex h-full flex-col border-r border-white/5 bg-[var(--surface)] px-3 py-3",
-          // Mobile: fixed overlay, hidden by default
-          "fixed inset-y-0 left-0 z-50 md:relative md:z-auto md:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-        ].join(" ")}
-      >
-      {/* Brand */}
-      <div className="mb-5 mt-1 flex items-center px-1.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10">
-          <Zap size={20} className="text-[#e8b84b]" />
-        </div>
-        <AnimatePresence>
-          {!isCollapsed && (
-            <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="ml-3 font-serif text-2xl font-semibold zl-text-spectrum"
+      <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/20">
+        Navigation
+      </p>
+      <nav className="mt-2 flex flex-col gap-0.5">
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeTab === item.id;
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={[
+                "flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-100",
+                isActive
+                  ? "bg-white/[0.07] text-white/90"
+                  : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
+              ].join(" ")}
             >
-              Zephr
-            </motion.span>
-          )}
-        </AnimatePresence>
+              <Icon size={16} className={isActive ? "text-[#e8b84b]" : "text-white/30"} />
+              <span className="whitespace-nowrap">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-        <button
-          type="button"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <motion.div
-            animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <ChevronLeft size={16} />
-          </motion.div>
-        </button>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin]">
-        <p className={isCollapsed ? "sr-only" : "px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20"}>
-          Navigation
+      <div className="mt-5">
+        <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/20">
+          Tools
         </p>
-        <nav className="mt-2 flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeTab === item.id;
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onTabChange(item.id);
-                }}
-                className={[
-                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-[13px] transition-colors",
-                  isActive
-                    ? "bg-white/[0.06] text-white/85"
-                    : "text-white/55 hover:bg-white/[0.04] hover:text-white/80",
-                ].join(" ")}
-                title={isCollapsed ? item.label : ""}
-              >
-                <Icon size={18} className={isActive ? "text-[#e8b84b]" : "text-white/35"} />
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="whitespace-nowrap"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Authorities */}
-        {!isCollapsed && (
-          <div className="mt-5">
-            <p className="px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20">
-              Authorities
-            </p>
-            <div className="mt-2 rounded-2xl border border-white/5 bg-white/[0.02] p-2">
-              {authorities.map((a) => (
-                <div
-                  key={a.key}
-                  className="flex items-center justify-between rounded-xl px-2.5 py-1.5 text-[12px] text-white/45 hover:bg-white/[0.03]"
-                >
-                  <span className="truncate">{a.label}</span>
-                  <span className="tabular-nums text-white/25">
-                    {a.count != null ? a.count.toLocaleString() : "—"}
-                  </span>
-                </div>
-              ))}
-              <div className="mt-1 px-2.5 pb-1 text-[11px] text-white/20">
-                Current results: {resultCount.toLocaleString()}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tools */}
-        {!isCollapsed && (
-          <div className="mt-5">
-            <p className="px-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/20">
-              Tools
-            </p>
-          </div>
-        )}
-        <nav className={isCollapsed ? "mt-5 flex flex-col gap-1.5" : "mt-2 flex flex-col gap-1.5"}>
+        <nav className="mt-2 flex flex-col gap-0.5">
           {TOOL_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
@@ -194,30 +93,246 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings, mobileOpen = f
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
                 className={[
-                  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-[13px] transition-colors",
+                  "flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-100",
                   isActive
-                    ? "bg-white/[0.06] text-white/85"
-                    : "text-white/55 hover:bg-white/[0.04] hover:text-white/80",
+                    ? "bg-white/[0.07] text-white/90"
+                    : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
                 ].join(" ")}
-                title={isCollapsed ? item.label : ""}
               >
-                <Icon size={18} className={isActive ? "text-[#e8b84b]" : "text-white/35"} />
-                {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                <Icon size={16} className={isActive ? "text-[#e8b84b]" : "text-white/30"} />
+                <span className="whitespace-nowrap">{item.label}</span>
               </button>
             );
           })}
         </nav>
-        </div>
       </div>
+    </>
+  );
+}
 
-      {/* Footer */}
-      <div className="mt-3 flex flex-col gap-1 border-t border-white/5 pt-3">
-        <ProfileMenu
-          isCollapsed={isCollapsed}
-          onOpenSettings={openSettings}
+export function Sidebar({ activeTab, onTabChange, onOpenSettings, onOpenBilling, mobileOpen = false, onMobileClose }: SidebarProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const { resultCount } = useSidebar();
+
+  const authorities = useMemo(() => [
+    { key: "FAA", label: "FAA", count: null as number | null },
+    { key: "EASA", label: "EASA", count: null as number | null },
+    { key: "TC", label: "Transport Canada", count: null as number | null },
+    { key: "ANAC", label: "ANAC Brasil", count: null as number | null },
+    { key: "ARG", label: "ANAC Argentina", count: null as number | null },
+    { key: "DGAC", label: "DGAC Chile", count: null as number | null },
+  ], []);
+
+  function openPanel() {
+    clearTimeout(hideTimer.current);
+    setPanelOpen(true);
+  }
+
+  function scheduleClose() {
+    hideTimer.current = setTimeout(() => setPanelOpen(false), 200);
+  }
+
+  function handleTabChange(tab: string) {
+    onTabChange(tab);
+    if (mobileOpen && onMobileClose) onMobileClose();
+    setPanelOpen(false);
+  }
+
+  function expand() {
+    setIsCollapsed(false);
+    setPanelOpen(false);
+  }
+
+  function collapse() {
+    setIsCollapsed(true);
+    if (mobileOpen && onMobileClose) onMobileClose();
+  }
+
+  /* ── Shared styles ── */
+  const sidebarStyle: React.CSSProperties = {
+    background: "var(--surface)",
+    borderRight: "1px solid rgba(255,255,255,0.07)",
+  };
+
+  return (
+    <>
+      {/* ════════════════════════════════════════════
+          MOBILE backdrop
+      ════════════════════════════════════════════ */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
+          onClick={onMobileClose}
+          aria-hidden="true"
         />
-      </div>
-    </motion.div>
+      )}
+
+      {/* ════════════════════════════════════════════
+          COLLAPSED (desktop only)
+          Header strip always visible at top-left.
+          Hover header OR panel → panel stays open.
+          Panel renders below the header, never on top.
+      ════════════════════════════════════════════ */}
+      {isCollapsed && !mobileOpen && (
+        <div className="hidden md:block">
+          {/* Always-visible header strip */}
+          <div
+            className="fixed left-0 top-0 z-[60] flex w-[244px] items-center justify-between px-3"
+            style={{ height: HEADER_H, ...sidebarStyle, borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            onMouseEnter={openPanel}
+            onMouseLeave={scheduleClose}
+          >
+            {/* Logo + name */}
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                <ZephrLogo width={18} height={18} />
+              </div>
+              <span className="font-serif text-base font-semibold text-[#e8b84b]">Zephr</span>
+            </div>
+
+            {/* Expand button */}
+            <button
+              type="button"
+              onClick={expand}
+              title="Pin sidebar"
+              className="h-7 w-7 flex items-center justify-center rounded-md text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/70"
+            >
+              <PanelLeftOpen size={15} />
+            </button>
+          </div>
+
+          {/* Panel content — slides in below the header */}
+          <AnimatePresence>
+            {panelOpen && (
+              <motion.div
+                key="hover-panel"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.14 }}
+                className="fixed left-0 z-50 flex w-[244px] flex-col"
+                style={{
+                  top: HEADER_H,
+                  bottom: 0,
+                  ...sidebarStyle,
+                  borderTop: "none",
+                }}
+                onMouseEnter={openPanel}
+                onMouseLeave={scheduleClose}
+              >
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-2">
+                  {/* Notifications */}
+                  <div className="mb-2">
+                    <NotificationPopover asSidebarItem />
+                  </div>
+
+                  {/* Nav — no Authorities in hover panel */}
+                  <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin]">
+                    <NavItems activeTab={activeTab} onTabChange={handleTabChange} />
+                  </div>
+
+                  {/* Profile */}
+                  <div className="mt-3 border-t border-white/5 pt-3">
+                    <ProfileMenu 
+                      isCollapsed={false} 
+                      onOpenSettings={onOpenSettings} 
+                      onOpenBilling={onOpenBilling}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════
+          EXPANDED sidebar (desktop + mobile overlay)
+      ════════════════════════════════════════════ */}
+      <AnimatePresence initial={false}>
+        {(!isCollapsed || mobileOpen) && (
+          <motion.div
+            key="sidebar-full"
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 244, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className={[
+              "h-full flex flex-col overflow-hidden shrink-0",
+              mobileOpen ? "fixed inset-y-0 left-0 z-50" : "relative",
+            ].join(" ")}
+            style={sidebarStyle}
+          >
+            <div className="flex h-full w-[244px] flex-col px-3 py-3">
+              {/* Header — same height as collapsed strip so layout is stable */}
+              <div
+                className="mb-2 flex shrink-0 items-center justify-between px-1"
+                style={{ height: HEADER_H - 24 }} // minus vertical padding
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                    <ZephrLogo width={18} height={18} />
+                  </div>
+                  <span className="font-serif text-base font-semibold text-[#e8b84b]">Zephr</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={collapse}
+                  title="Collapse sidebar"
+                  className="h-7 w-7 flex items-center justify-center rounded-md text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/70"
+                >
+                  <PanelLeftClose size={15} />
+                </button>
+              </div>
+
+              {/* Notifications */}
+              <div className="mb-3 shrink-0">
+                <NotificationPopover asSidebarItem />
+              </div>
+
+              {/* Scrollable nav */}
+              <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin]">
+                <NavItems activeTab={activeTab} onTabChange={handleTabChange} />
+
+                {/* Authorities — only in full sidebar */}
+                <div className="mt-5">
+                  <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                    Authorities
+                  </p>
+                  <div className="mt-2 rounded-md border border-white/5 bg-white/[0.015]">
+                    {authorities.map((a) => (
+                      <div
+                        key={a.key}
+                        className="flex items-center justify-between px-3 py-1.5 text-xs text-white/40 hover:bg-white/[0.02] transition-colors"
+                      >
+                        <span className="truncate">{a.label}</span>
+                        <span className="tabular-nums text-[10px] text-white/20">
+                          {a.count != null ? a.count.toLocaleString() : "—"}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="px-3 py-1.5 text-[10px] text-white/15 border-t border-white/5">
+                      Results: {resultCount.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile */}
+              <div className="mt-3 border-t border-white/5 pt-3">
+                <ProfileMenu 
+                  isCollapsed={false} 
+                  onOpenSettings={onOpenSettings} 
+                  onOpenBilling={onOpenBilling}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

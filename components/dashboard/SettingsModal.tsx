@@ -1,10 +1,55 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { X, User, Gauge, Settings2, CreditCard } from "lucide-react";
+import { X, User, Gauge, Settings2, CreditCard, Check, Minus } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 type SettingsTab = "general" | "account" | "usage" | "billing";
+
+const PLAN_COMPARISON = [
+  {
+    feature: "AD Search",
+    free: "50 / month",
+    pro: "Unlimited",
+    team: "Unlimited",
+  },
+  {
+    feature: "Authorities",
+    free: "3 included",
+    pro: "All 9 included",
+    team: "All 9 included",
+  },
+  {
+    feature: "Aircraft Tracking",
+    free: "1 aircraft",
+    pro: "Up to 10",
+    team: "Unlimited",
+  },
+  {
+    feature: "Exports (CSV/Excel)",
+    free: false,
+    pro: true,
+    team: true,
+  },
+  {
+    feature: "Saved ADs",
+    free: true,
+    pro: true,
+    team: true,
+  },
+  {
+    feature: "Team Workspaces",
+    free: false,
+    pro: false,
+    team: true,
+  },
+  {
+    feature: "API Access",
+    free: false,
+    pro: false,
+    team: true,
+  },
+];
 
 function pct(n: number) {
   return Math.max(0, Math.min(100, n));
@@ -21,6 +66,10 @@ export function SettingsModal({
 }) {
   const { user, plan } = useAuth();
   const [tab, setTab] = useState<SettingsTab>(() => initialTab ?? "general");
+
+  useEffect(() => {
+    if (initialTab && open) setTab(initialTab);
+  }, [initialTab, open]);
   const panelRef = useRef<HTMLDivElement | null>(null);
 
   const displayName =
@@ -275,14 +324,59 @@ export function SettingsModal({
             )}
 
             {tab === "billing" && (
-              <div className="max-w-2xl">
-                <h2 className="text-xl font-semibold text-white/90">Billing</h2>
-                <p className="mt-1 text-sm text-white/35">
-                  Billing details will appear here when connected.
-                </p>
+              <div className="max-w-4xl">
+                <header className="mb-10">
+                  <h2 className="text-3xl font-semibold tracking-tight text-white/90">
+                    Plans & Billing
+                  </h2>
+                  <p className="mt-2 text-sm text-white/35">
+                    Compare plans and manage your subscription. Upgrade as your fleet grows.
+                  </p>
+                </header>
 
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-white/35">
-                  Coming soon.
+                <div className="grid grid-cols-3 gap-5 mb-12">
+                  <PlanCard 
+                    name="Free" 
+                    price="0" 
+                    current={plan === "free"} 
+                    description="For individual pilots"
+                  />
+                  <PlanCard 
+                    name="Pro" 
+                    price="29" 
+                    current={plan === "pro"} 
+                    description="For active operators"
+                    highlight
+                  />
+                  <PlanCard 
+                    name="Team" 
+                    price="99" 
+                    current={plan === "team"} 
+                    description="For maintenance shops"
+                  />
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.01] overflow-hidden backdrop-blur-sm">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10 bg-white/[0.03]">
+                        <th className="px-6 py-4.5 font-semibold text-white/50 uppercase tracking-wider text-[11px]">Features</th>
+                        <th className="px-6 py-4.5 font-semibold text-white/50 uppercase tracking-wider text-[11px]">Free</th>
+                        <th className="px-6 py-4.5 font-semibold text-white/50 uppercase tracking-wider text-[11px]">Pro</th>
+                        <th className="px-6 py-4.5 font-semibold text-white/50 uppercase tracking-wider text-[11px]">Team</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {PLAN_COMPARISON.map((row) => (
+                        <tr key={row.feature} className="hover:bg-white/[0.015] transition-colors group">
+                          <td className="px-6 py-4 text-white/70 group-hover:text-white transition-colors">{row.feature}</td>
+                          <td className="px-6 py-4">{renderFeatureValue(row.free)}</td>
+                          <td className="px-6 py-4">{renderFeatureValue(row.pro)}</td>
+                          <td className="px-6 py-4">{renderFeatureValue(row.team)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
@@ -291,6 +385,67 @@ export function SettingsModal({
       </div>
     </div>
   );
+}
+
+function PlanCard({ name, price, current, description, highlight }: { 
+  name: string; 
+  price: string; 
+  current: boolean; 
+  description: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className={`relative flex flex-col rounded-2xl p-6 transition-all duration-300 ${
+      highlight 
+        ? "bg-white/[0.03] border border-[#e8b84b]/30 shadow-[0_20px_40px_rgba(232,184,75,0.05)]" 
+        : "bg-white/[0.02] border border-white/10 hover:border-white/20"
+    }`}>
+      {highlight && (
+        <>
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, #e8b84b, transparent)" }}
+          />
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-[#e8b84b]/40 bg-[#0a0a0a] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#e8b84b] shadow-lg">
+            Recommended
+          </span>
+        </>
+      )}
+      
+      <p className={`text-base font-bold ${highlight ? "text-[#e8b84b]" : "text-white/90"}`}>{name}</p>
+      <p className="mt-1.5 text-xs leading-relaxed text-white/35">{description}</p>
+      
+      <div className="mt-6 flex items-baseline gap-1.5">
+        <span className="text-3xl font-bold tracking-tight text-white">${price}</span>
+        <span className="text-xs font-medium text-white/20">/mo</span>
+      </div>
+
+      <button
+        type="button"
+        disabled={current}
+        className={`mt-6 w-full rounded-xl py-2.5 text-xs font-bold tracking-wide transition-all ${
+          current 
+            ? "bg-white/[0.03] border border-white/5 text-white/20 cursor-default" 
+            : highlight
+              ? "bg-[#e8b84b] text-black hover:bg-[#d4a040] shadow-[0_10px_20px_rgba(232,184,75,0.15)] active:scale-[0.98] cursor-pointer"
+              : "bg-white text-black hover:bg-white/90 active:scale-[0.98] cursor-pointer shadow-lg"
+        }`}
+      >
+        {current ? "Current plan" : "Upgrade now"}
+      </button>
+    </div>
+  );
+}
+
+function renderFeatureValue(val: string | boolean) {
+  if (typeof val === "boolean") {
+    return val ? (
+      <Check size={16} className="text-[#e8b84b]" />
+    ) : (
+      <Minus size={16} className="text-white/10" />
+    );
+  }
+  return <span className="text-white/60">{val}</span>;
 }
 
 function NavItem({

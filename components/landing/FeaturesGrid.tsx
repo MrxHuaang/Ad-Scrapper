@@ -108,7 +108,7 @@ const FEATURES = [
   {
     icon: Search,
     label: "Instant full-text search",
-    body: "Query 21,000+ ADs across all authorities in milliseconds. Filter by aircraft type, effective date, or regulation number.",
+    body: "Query 28,000+ ADs across all authorities in milliseconds. Filter by aircraft type, effective date, or regulation number.",
     illustration: <SearchIllustration />,
     size: "large",
   },
@@ -186,7 +186,7 @@ export function FeaturesGrid() {
                 <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#737373]">{FEATURES[0].body}</p>
               </div>
               <div className="shrink-0 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1 font-mono text-[11px] tabular-nums text-white/20">
-                21,450+
+                28,431
               </div>
             </div>
             {FEATURES[0].illustration}

@@ -4,12 +4,17 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { NumberedPagination } from "@/components/ui/numbered-pagination";
 import type { AircraftRow } from "@/lib/aircraft/aircraftPersistence";
 import type { ADResult } from "@/types";
 import { listMySavedAds } from "@/lib/ads/adPersistence";
+import { queryAdsTable } from "@/lib/ads/searchAdsTable";
 import { showToast } from "@/hooks/useToast";
 
 const SESSION_KEY = "zephr_session";
+/** Max ADs kept in memory from session/saved sources (pagination slices this list) */
+const MAX_APPLICABLE_ADS = 500;
+const APPLICABLE_ADS_PAGE_SIZE = 10;
 
 function normalize(v: string) {
   return v
@@ -62,12 +67,14 @@ export function ApplicableAds({
 }) {
   const [adsLoading, setAdsLoading] = useState(true);
   const [ads, setAds] = useState<ADResult[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
     // Avoid an infinite skeleton when no aircraft is selected yet.
     if (!aircraft) {
       setAds([]);
+      setCurrentPage(1);
       setAdsLoading(false);
       return;
     }
@@ -79,43 +86,63 @@ export function ApplicableAds({
     setAdsLoading(true);
     (async () => {
       try {
-        // 1) Try last search dataset from sessionStorage
+        // 1) Query the global ads table (scraped data) by make/model
         let candidates: ADResult[] = [];
+        if (aircraft.make || aircraft.model) {
+          try {
+            candidates = await queryAdsTable(aircraft.make || "", aircraft.model || "", 500);
+          } catch {
+            // ignore — fall through to other sources
+          }
+        }
+
+        // 2) Supplement with last search dataset from sessionStorage
         try {
           const raw = sessionStorage.getItem(SESSION_KEY);
           if (raw) {
             const parsed = JSON.parse(raw) as { results?: ADResult[] };
-            if (Array.isArray(parsed?.results)) candidates = parsed.results;
+            if (Array.isArray(parsed?.results)) {
+              const scored = parsed.results.filter((ad) => matchScore(aircraft, ad) > 0);
+              const existing = new Set(candidates.map((a) => `${a.Source}:${a.AD_Number}`));
+              for (const ad of scored) {
+                if (!existing.has(`${ad.Source}:${ad.AD_Number}`)) candidates.push(ad);
+              }
+            }
           }
         } catch {
           // ignore
         }
 
-        // 2) Fallback to saved ADs snapshot
+        // 3) Fallback to user's saved ADs if still empty
         if (candidates.length === 0) {
           const saved = await listMySavedAds();
-          candidates = saved.map((r) => ({
-            AD_Number: r.ad_number,
-            Source: r.source,
-            Subject: r.subject ?? "",
-            Make: r.make ?? "",
-            Model: r.model ?? "",
-            Effective_Date: r.effective_date ?? "",
-            Status: r.status ?? "",
-            Product_Type: r.product_type ?? "",
-            Docket: "",
-            PDF_Link: r.pdf_link ?? "",
-          }));
+          candidates = saved
+            .map((r) => ({
+              AD_Number: r.ad_number,
+              Source: r.source,
+              Subject: r.subject ?? "",
+              Make: r.make ?? "",
+              Model: r.model ?? "",
+              Effective_Date: r.effective_date ?? "",
+              Status: r.status ?? "",
+              Product_Type: r.product_type ?? "",
+              Docket: "",
+              PDF_Link: r.pdf_link ?? "",
+            }))
+            .filter((ad) => matchScore(aircraft, ad) > 0);
         }
 
         const scored = candidates
           .map((ad) => ({ ad, score: matchScore(aircraft, ad) }))
           .filter((x) => x.score > 0)
           .sort((a, b) => b.score - a.score)
-          .slice(0, 30)
+          .slice(0, MAX_APPLICABLE_ADS)
           .map((x) => x.ad);
 
-        if (!cancelled) setAds(scored);
+        if (!cancelled) {
+          setAds(scored);
+          setCurrentPage(1);
+        }
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : "Could not load applicable ADs";
         showToast(msg, "error");
@@ -128,6 +155,13 @@ export function ApplicableAds({
       cancelled = true;
     };
   }, [aircraft, loading]);
+
+  const totalPages = Math.ceil(ads.length / APPLICABLE_ADS_PAGE_SIZE);
+
+  const pageAds = useMemo(() => {
+    const start = (currentPage - 1) * APPLICABLE_ADS_PAGE_SIZE;
+    return ads.slice(start, start + APPLICABLE_ADS_PAGE_SIZE);
+  }, [ads, currentPage]);
 
   const headerRight = useMemo(() => {
     if (loading || adsLoading) return <Skeleton as="span" className="h-3 w-16" />;
@@ -143,7 +177,7 @@ export function ApplicableAds({
             Applicable ADs
           </div>
           <p className="mt-2 text-sm text-white/35">
-            Matched by make/model (MVP). Upgrade matching rules in the next iteration.
+            Matched from the AD database by make and model.
           </p>
         </div>
         {headerRight}
@@ -167,34 +201,46 @@ export function ApplicableAds({
           </div>
         ) : ads.length === 0 ? (
           <div className="p-6 text-sm text-white/40">
-            No matches yet. Add make/model to the aircraft, or run a search to enrich the dataset.
+            No applicable ADs found. Make sure the aircraft has a make and model set.
           </div>
         ) : (
-          <div className="divide-y divide-white/5">
-            {ads.map((ad) => (
-              <Link
-                key={`${ad.Source}-${ad.AD_Number}`}
-                href={buildAdHref(ad)}
-                className="group flex cursor-pointer items-start justify-between gap-4 bg-white/[0.01] p-4 hover:bg-white/[0.03]"
-              >
-                <div className="min-w-0">
-                  <p className="font-mono text-sm text-white/85">{ad.AD_Number}</p>
-                  <p className="mt-1 line-clamp-2 text-sm text-white/45">
-                    {ad.Subject || "No subject"}
-                  </p>
-                  <p className="mt-2 text-[11px] text-white/30">
-                    {(ad.Source || "—") +
-                      (ad.Make ? ` · ${ad.Make}` : "") +
-                      (ad.Model ? ` · ${ad.Model}` : "") +
-                      (ad.Effective_Date ? ` · Effective ${ad.Effective_Date}` : "")}
-                  </p>
-                </div>
-                <div className="shrink-0 text-xs text-white/25 group-hover:text-white/45">
-                  Open <ArrowUpRight size={14} className="inline-block -translate-y-[1px]" />
-                </div>
-              </Link>
-            ))}
-          </div>
+          <>
+            <div className="divide-y divide-white/5">
+              {pageAds.map((ad) => (
+                <Link
+                  key={`${ad.Source}-${ad.AD_Number}`}
+                  href={buildAdHref(ad)}
+                  className="group flex cursor-pointer items-start justify-between gap-4 bg-white/[0.01] p-4 hover:bg-white/[0.03]"
+                >
+                  <div className="min-w-0">
+                    <p className="font-mono text-sm text-white/85">{ad.AD_Number}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-white/45">
+                      {ad.Subject || "No subject"}
+                    </p>
+                    <p className="mt-2 text-[11px] text-white/30">
+                      {(ad.Source || "—") +
+                        (ad.Make ? ` · ${ad.Make}` : "") +
+                        (ad.Model ? ` · ${ad.Model}` : "") +
+                        (ad.Effective_Date ? ` · Effective ${ad.Effective_Date}` : "")}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-xs text-white/25 group-hover:text-white/45">
+                    Open <ArrowUpRight size={14} className="inline-block -translate-y-[1px]" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {totalPages > 1 ? (
+              <div className="border-t border-white/5 px-2 py-3">
+                <NumberedPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  paginationItemsToDisplay={5}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            ) : null}
+          </>
         )}
       </div>
     </div>

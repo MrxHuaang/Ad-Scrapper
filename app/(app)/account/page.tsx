@@ -161,7 +161,7 @@ export default function AccountPage() {
   const meta = PLAN_META[plan];
 
   return (
-    <div className="app-theme min-h-dvh bg-[var(--bg)]">
+    <div className="h-dvh overflow-y-auto scrollbar-custom">
       {/* Topbar */}
       <header
         className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b px-6"

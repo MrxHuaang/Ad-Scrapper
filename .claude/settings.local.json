@@ -2,7 +2,23 @@
   "permissions": {
     "allow": [
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(npx tsc *)",
+      "Bash(python3 -c ' *)",
+      "Bash(pip list *)",
+      "Bash(python populate_db.py --source anac_argentina)",
+      "Bash(python populate_db.py --source dgac_chile)",
+      "Bash(python populate_db.py --source aerocivil_colombia)",
+      "Bash(python populate_db.py --source gcaa_uae)",
+      "Bash(python populate_db.py --source casa_australia)",
+      "Bash(taskkill /PID 20576 /F)",
+      "Bash(python populate_db.py --source federal_register)",
+      "PowerShell(Stop-Process -Id 20576 -Force)",
+      "Bash(python populate_db.py --source anac_brazil)",
+      "Bash(python populate_db.py --source transport_canada)",
+      "Bash(python -c ' *)"
     ]
   }
 }

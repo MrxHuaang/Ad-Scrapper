@@ -3,12 +3,12 @@
 import { motion } from "framer-motion";
 
 const ITEMS = [
-  { code: "FAA", name: "Federal Aviation Administration", region: "United States", count: "10,000+" },
-  { code: "EASA", name: "EU Aviation Safety Agency", region: "Europe", count: "8,000+" },
-  { code: "TC", name: "Transport Canada Civil Aviation", region: "Canada", count: "3,000+" },
-  { code: "ANAC", name: "Agência Nacional de Aviação Civil", region: "Brazil", count: "450+" },
-  { code: "ARG", name: "ANAC Argentina", region: "Argentina", count: "—" },
-  { code: "DGAC", name: "DGAC Chile", region: "Chile", count: "—" },
+  { code: "FAA", name: "Federal Aviation Administration", region: "United States", count: "5,006" },
+  { code: "EASA", name: "EU Aviation Safety Agency", region: "Europe", count: "18,199" },
+  { code: "TC", name: "Transport Canada Civil Aviation", region: "Canada", count: "4,719" },
+  { code: "ANAC", name: "Agência Nacional de Aviação Civil", region: "Brazil", count: "450" },
+  { code: "ARG", name: "ANAC Argentina", region: "Argentina", count: "13" },
+  { code: "DGAC", name: "DGAC Chile", region: "Chile", count: "44" },
 ];
 
 // doubled for seamless loop

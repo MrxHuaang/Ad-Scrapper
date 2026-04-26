@@ -22,6 +22,7 @@ import { BulkBar } from "@/components/search/BulkBar";
 import { getSortedResults } from "@/components/search/searchUtils";
 import { StatCards } from "@/components/dashboard/StatCards";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { AircraftDashboardView } from "@/components/aircraft/AircraftDashboardView";
 import { SOURCE_KEYS } from "@/types";
 import { listMySavedAds } from "@/lib/ads/adPersistence";
 import Link from "next/link";
@@ -79,12 +80,17 @@ function SearchPageInner() {
   const [dashboardQuery, setDashboardQuery] = useState("");
   const [savedAds, setSavedAds] = useState<Awaited<ReturnType<typeof listMySavedAds>>>([]);
   const [savedLoading, setSavedLoading] = useState(false);
+  const [prefillMake, setPrefillMake] = useState("");
+  const [prefillModel, setPrefillModel] = useState("");
 
-  // Restore tab from URL (so Back returns where user was).
+  // Restore tab + prefill from URL.
   useEffect(() => {
     const tab = sp.get("tab");
-    if (!tab) return;
-    setActiveTab(tab);
+    if (tab) setActiveTab(tab);
+    const mk = sp.get("make");
+    const mo = sp.get("model");
+    if (mk) setPrefillMake(mk);
+    if (mo) setPrefillModel(mo);
   }, [sp]);
 
   const handleTabChange = useCallback(
@@ -264,45 +270,25 @@ function SearchPageInner() {
       results={topbarFiltered}
       configuredAuthorities={SOURCE_KEYS.filter((k) => k !== "all").map((k) => k)}
     >
-      <div className="mx-auto max-w-[1400px] px-8 py-8">
-          
-          {/* Dashboard Header */}
-          <header className="mb-10 flex items-end justify-between">
-            <div>
-              <motion.h1 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="font-serif text-4xl font-semibold text-white"
-              >
-                {activeTab === "search" ? "Dashboard" : "Fleet overview"}
-              </motion.h1>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button className="btn-glass btn-sm border-white/5 bg-white/[0.02] text-white/40">
-                Export report
-              </button>
-            </div>
-          </header>
-
+      <div className="mx-auto max-w-[1400px] px-6 py-6">
           {/* Stats Overview */}
           {activeTab === "dashboard" && (
-            <div className="mb-12">
+            <div className="mb-8">
               <StatCards results={topbarFiltered} />
             </div>
           )}
 
           {activeTab === "search" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            <div>
               {/* ══ Search UI ══ */}
-              <div className="mb-10">
+              <div className="mb-8">
                 <div className="mx-auto max-w-4xl">
                   <div className="mb-6">
-                    <SearchForm onSearch={handleSearch} isSearching={isSearching} />
+                    <SearchForm
+                      onSearch={handleSearch}
+                      isSearching={isSearching}
+                      defaultValues={{ make: prefillMake, model: prefillModel }}
+                    />
                   </div>
 
                   {/* Source pills */}
@@ -427,13 +413,35 @@ function SearchPageInner() {
                 )}
 
                 {hasSearched && !isSearching && results.length === 0 && status !== "idle" && (
-                  <div className="flex flex-col items-center gap-4 py-24 text-center glass rounded-3xl border-white/5">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.03] text-3xl">✈️</div>
-                    <p className="text-lg font-medium text-white/60 font-serif">No directives found</p>
+                  <div className="flex flex-col items-center gap-6 py-32 text-center">
+                    <div>
+                      <p className="text-lg font-medium text-white/70 mb-2">No directives found</p>
+                      <p className="text-sm text-white/40 max-w-sm mx-auto">
+                        Try adjusting your search criteria or selecting different authorities
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setSearchTerm("");
+                          setResults([]);
+                          setHasSearched(false);
+                        }}
+                        className="px-4 py-2 text-sm rounded-lg border border-white/10 text-white/60 hover:bg-white/[0.03] transition-colors"
+                      >
+                        Clear search
+                      </button>
+                      <button
+                        onClick={() => setSelectedSource("all")}
+                        className="px-4 py-2 text-sm rounded-lg border border-[#e8b84b]/30 bg-[#e8b84b]/5 text-[#e8b84b] hover:bg-[#e8b84b]/10 transition-colors"
+                      >
+                        View all sources
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {activeTab === "saved" && (
@@ -501,7 +509,11 @@ function SearchPageInner() {
             </div>
           )}
 
-          {activeTab !== "search" && activeTab !== "saved" && (
+          {activeTab === "aircraft" && (
+            <AircraftDashboardView />
+          )}
+
+          {activeTab !== "search" && activeTab !== "saved" && activeTab !== "aircraft" && activeTab !== "dashboard" && (
             <div className="flex flex-col items-center justify-center py-32 opacity-20">
               <Zap size={64} className="mb-6 text-[#e8b84b]" />
               <p className="text-xl font-serif">Module coming soon</p>

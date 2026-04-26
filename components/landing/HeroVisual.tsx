@@ -19,7 +19,7 @@ const RINGS = [
     reverse: false,
     dash: "4 10",
     label: "FAA",
-    count: "10,000+",
+    count: "5,006",
     labelAngle: 38,
     dotColor: "#e8b84b",
     dotR: 3.5,
@@ -32,7 +32,7 @@ const RINGS = [
     reverse: true,
     dash: "6 16",
     label: "EASA",
-    count: "8,000+",
+    count: "18,199",
     labelAngle: 158,
     dotColor: "rgba(255,255,255,0.65)",
     dotR: 3,
@@ -45,7 +45,7 @@ const RINGS = [
     reverse: false,
     dash: "3 9",
     label: "TC",
-    count: "3,000+",
+    count: "4,719",
     labelAngle: 248,
     dotColor: "rgba(255,255,255,0.5)",
     dotR: 2.5,
@@ -222,7 +222,7 @@ export function HeroVisual() {
           letterSpacing="0.15em"
           fontFamily="var(--font-geist-sans, ui-sans-serif, sans-serif)"
         >
-          21,450+ DIRECTIVES
+          28,431 DIRECTIVES
         </text>
       </svg>
     </div>

@@ -124,7 +124,7 @@ export function ProductPreview() {
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-[#737373]">
                   Total ADs indexed
                 </p>
-                <p className="mt-1 text-2xl font-bold text-white">21,450+</p>
+                <p className="mt-1 text-2xl font-bold text-white">28,431</p>
               </div>
             </div>
 

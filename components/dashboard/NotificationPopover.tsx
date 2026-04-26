@@ -60,7 +60,7 @@ function Dot() {
   );
 }
 
-export function NotificationPopover() {
+export function NotificationPopover({ asSidebarItem = false }: { asSidebarItem?: boolean }) {
   const [notifications, setNotifications] = useState(initialNotifications);
   const unreadCount = notifications.filter((n) => n.unread).length;
 
@@ -74,21 +74,41 @@ export function NotificationPopover() {
     );
   };
 
+  const sidebarTrigger = (
+    <button
+      type="button"
+      className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-white/50 transition-colors hover:bg-white/[0.04] hover:text-white/80"
+      aria-label="Open notifications"
+    >
+      <Bell size={16} className="text-white/30 shrink-0" />
+      <span className="flex-1 whitespace-nowrap text-left">Notifications</span>
+      {unreadCount > 0 && (
+        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e8b84b]/15 px-1 text-[10px] font-semibold text-[#e8b84b]">
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </span>
+      )}
+    </button>
+  );
+
+  const iconTrigger = (
+    <button
+      type="button"
+      className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/35 transition-colors hover:bg-white/[0.05] hover:text-white/70"
+      aria-label="Open notifications"
+    >
+      <Bell size={16} />
+      {unreadCount > 0 && (
+        <Badge className="absolute -right-1.5 -top-1.5 min-w-[18px] px-1 py-0 text-[10px] leading-[18px]">
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </Badge>
+      )}
+    </button>
+  );
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/35 transition-colors hover:bg-white/[0.05] hover:text-white/70"
-          aria-label="Open notifications"
-        >
-          <Bell size={16} />
-          {unreadCount > 0 && (
-            <Badge className="absolute -right-1.5 -top-1.5 min-w-[18px] px-1 py-0 text-[10px] leading-[18px]">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </Badge>
-          )}
-        </button>
+        {asSidebarItem ? sidebarTrigger : iconTrigger}
       </PopoverTrigger>
 
       <PopoverContent align="end" sideOffset={8} className="w-80 p-1">

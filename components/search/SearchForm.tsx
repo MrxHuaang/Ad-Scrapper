@@ -1,9 +1,18 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, useRef, useEffect } from "react";
 import type { SearchParams } from "@/types";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/ui/Select";
+
+const PRODUCT_TYPES = [
+  { label: "All product types", value: "" },
+  { label: "Aircraft", value: "Aircraft" },
+  { label: "Engine", value: "Engine" },
+  { label: "Propeller", value: "Propeller" },
+];
 
 function parseDateInput(value: string): string {
   const parts = value.split("/");
@@ -11,6 +20,13 @@ function parseDateInput(value: string): string {
   const [dd, mm, yyyy] = parts;
   if (!dd || !mm || !yyyy) return "";
   return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+}
+
+interface SearchRecord {
+  keyword: string;
+  make?: string;
+  model?: string;
+  timestamp: number;
 }
 
 interface SearchFormProps {
@@ -25,6 +41,9 @@ const fieldCls =
 const advFieldCls =
   "w-full rounded-lg border border-[#252525] bg-[#111] px-3.5 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-white/20 focus:bg-[#161616] focus:outline-none transition-colors";
 
+const HISTORY_KEY = "zephr_search_history";
+const MAX_HISTORY = 8;
+
 export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormProps) {
   const [keyword, setKeyword] = useState(defaultValues?.keyword ?? "");
   const [make, setMake] = useState(defaultValues?.make ?? "");
@@ -33,9 +52,60 @@ export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormP
   const [dateFrom, setDateFrom] = useState(defaultValues?.date_from ?? "");
   const [dateTo, setDateTo] = useState(defaultValues?.date_to ?? "");
   const [showAdv, setShowAdv] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<SearchRecord[]>([]);
+  const historyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(HISTORY_KEY);
+      if (stored) setHistory(JSON.parse(stored));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (historyRef.current && !historyRef.current.contains(e.target as Node)) {
+        setShowHistory(false);
+      }
+    }
+    if (showHistory) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showHistory]);
+
+  function saveToHistory() {
+    const trimmedKw = keyword.trim();
+    const trimmedMk = make.trim();
+    const trimmedMd = model.trim();
+
+    if (!trimmedKw) return;
+
+    const record: SearchRecord = {
+      keyword: trimmedKw,
+      make: trimmedMk || undefined,
+      model: trimmedMd || undefined,
+      timestamp: Date.now(),
+    };
+
+    const filtered = history.filter(
+      (r) => !(r.keyword === trimmedKw && r.make === trimmedMk && r.model === trimmedMd)
+    );
+    const updated = [record, ...filtered].slice(0, MAX_HISTORY);
+    setHistory(updated);
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+    } catch {
+      /* ignore */
+    }
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    saveToHistory();
     onSearch({
       source: "federal_register",
       keyword: keyword.trim(),
@@ -46,6 +116,13 @@ export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormP
       date_to: parseDateInput(dateTo),
       max_results: 2000,
     });
+  }
+
+  function handleSelectHistory(record: SearchRecord) {
+    setKeyword(record.keyword);
+    setMake(record.make ?? "");
+    setModel(record.model ?? "");
+    setShowHistory(false);
   }
 
   const hasAdv = productType || dateFrom || dateTo;
@@ -85,6 +162,20 @@ export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormP
           />
         </div>
 
+        {/* History toggle */}
+        <button
+          type="button"
+          onClick={() => setShowHistory((v) => !v)}
+          title="Search history"
+          disabled={history.length === 0}
+          className={cn(
+            "flex cursor-pointer items-center justify-center border-l border-[#252525] px-3.5 transition-colors",
+            showHistory ? "text-white/70 bg-white/[0.04]" : "text-white/25 hover:text-white/55 disabled:opacity-30",
+          )}
+        >
+          <Clock size={14} />
+        </button>
+
         {/* Advanced toggle */}
         <button
           type="button"
@@ -114,6 +205,39 @@ export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormP
         </button>
       </div>
 
+      {/* ── Search History ── */}
+      <AnimatePresence>
+        {showHistory && history.length > 0 && (
+          <motion.div
+            ref={historyRef}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-[#1e1e1e] bg-[#080808] overflow-hidden"
+          >
+            {history.map((record, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => handleSelectHistory(record)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.03] transition-colors border-b border-[#1e1e1e] last:border-0 group text-sm"
+              >
+                <Clock size={12} className="text-white/20 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-white/80 truncate">{record.keyword}</p>
+                  {(record.make || record.model) && (
+                    <p className="text-xs text-white/30 truncate">
+                      {[record.make, record.model].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                </div>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Advanced filters ── */}
       {showAdv && (
         <div className="grid grid-cols-1 gap-2 rounded-xl border border-[#1e1e1e] bg-[#080808] p-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
@@ -132,16 +256,13 @@ export function SearchForm({ onSearch, isSearching, defaultValues }: SearchFormP
             onChange={(e) => setModel(e.target.value)}
             className={cn(advFieldCls, "sm:hidden")}
           />
-          <select
+          <Select
             value={productType}
-            onChange={(e) => setProductType(e.target.value)}
-            className={cn(advFieldCls, "cursor-pointer text-white/60 lg:col-span-1")}
-          >
-            <option value="">All product types</option>
-            <option value="Aircraft">Aircraft</option>
-            <option value="Engine">Engine</option>
-            <option value="Propeller">Propeller</option>
-          </select>
+            onChange={setProductType}
+            options={PRODUCT_TYPES}
+            placeholder="All product types"
+            className="lg:col-span-1"
+          />
           <input
             type="text"
             placeholder="From (dd/mm/yyyy)"

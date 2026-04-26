@@ -12,9 +12,11 @@ import Image from "next/image";
 export function ProfileMenu({
   isCollapsed,
   onOpenSettings,
+  onOpenBilling,
 }: {
   isCollapsed: boolean;
   onOpenSettings?: () => void;
+  onOpenBilling?: () => void;
 }) {
   const { user, plan } = useAuth();
   const router = useRouter();
@@ -49,7 +51,7 @@ export function ProfileMenu({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl p-2 transition-all hover:bg-white/[0.05] ${
+        className={`flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl p-2 text-left transition-all hover:bg-white/[0.05] ${
           open ? "bg-white/[0.05]" : ""
         }`}
       >
@@ -72,11 +74,11 @@ export function ProfileMenu({
         </div>
 
         {!isCollapsed && (
-          <div className="min-w-0 flex flex-1 flex-col items-start overflow-hidden">
+          <div className="min-w-0 flex flex-1 flex-col overflow-hidden text-left">
             <span className="w-full truncate text-[13px] font-medium text-white/90">
               {displayName}
             </span>
-            <span className="text-[10px] text-white/30 uppercase tracking-wider">{plan} plan</span>
+            <span className="truncate text-[10px] text-white/30 uppercase tracking-wider">{plan} plan</span>
           </div>
         )}
       </button>
@@ -121,7 +123,10 @@ export function ProfileMenu({
 
             <button
               type="button"
-              onClick={() => showToast("Upgrade flow coming soon", "info")}
+              onClick={() => {
+                setOpen(false);
+                onOpenBilling?.();
+              }}
               className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
             >
               <Sparkles size={13} /> Upgrade plan <ArrowUpRight size={12} className="ml-auto text-white/25" />
