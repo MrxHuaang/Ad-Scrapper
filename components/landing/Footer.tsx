@@ -209,15 +209,14 @@ export function Footer({ compact = false }: FooterProps) {
                 className="hidden h-3 w-px shrink-0 bg-white/[0.08] sm:block"
                 aria-hidden
               />
-              {/* Hyvento wordmark — display size was too small; PNG @2x is fine, no need to re-export just for scale */}
               <Image
                 src="/Hyvento.png"
                 alt="Hyvento"
-                width={200}
-                height={36}
-                className="h-5 w-auto max-w-[9rem] object-contain object-left opacity-90 sm:h-6 sm:max-w-[11rem] md:h-7"
+                width={280}
+                height={50}
+                className="h-7 w-auto max-w-[12rem] object-contain object-left opacity-90 sm:h-9 sm:max-w-[16rem] md:h-10 md:max-w-[18rem]"
                 style={{ width: "auto" }}
-                sizes="(max-width: 768px) 128px, 180px"
+                sizes="(max-width: 640px) 200px, (max-width: 768px) 240px, 288px"
               />
             </div>
             <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[0.6875rem] font-medium tracking-wide text-[#737373]">
