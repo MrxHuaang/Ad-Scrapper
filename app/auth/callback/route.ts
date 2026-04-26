@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getOauthProviderFromUser,
+  OAUTH_LAST_COOKIE,
+} from "@/lib/auth/last-oauth-provider";
+
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 400;
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -10,7 +16,19 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}/search`);
+      const { data: { user } } = await supabase.auth.getUser();
+      const provider = getOauthProviderFromUser(user);
+      const res = NextResponse.redirect(`${origin}/search`);
+      if (provider) {
+        res.cookies.set(OAUTH_LAST_COOKIE, provider, {
+          path: "/",
+          maxAge: COOKIE_MAX_AGE,
+          sameSite: "lax",
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+        });
+      }
+      return res;
     }
 
     return NextResponse.redirect(
