@@ -7,7 +7,6 @@ import { ProductPreview } from "@/components/landing/ProductPreview";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { StickyAudienceSection } from "@/components/landing/StickyAudienceSection";
 import { AuthorityCoverage } from "@/components/landing/AuthorityCoverage";
-import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
 import Prism from "@/components/landing/Prism";
@@ -62,18 +61,13 @@ export default function LandingPage() {
 
           <div className="relative z-10 w-full">
             <ProductPreview />
-            <div className="h-px bg-white/[0.04]" />
             <FeaturesGrid />
             <StickyAudienceSection />
             <AuthorityCoverage />
+            {/* FAQ inside same layer as coverage — avoids a hard seam + extra empty band */}
+            <FAQ />
           </div>
         </div>
-
-        {/* Pricing — no need to leave the page */}
-        <PricingSection />
-
-        {/* FAQ — handle objections before checkout */}
-        <FAQ />
       </main>
       <Footer />
     </>

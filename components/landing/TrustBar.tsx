@@ -22,7 +22,7 @@ const ROLES = [
 
 export function TrustBar() {
   return (
-    <section className="border-b border-white/[0.05] bg-black py-16 md:py-20">
+    <section className="bg-black py-16 md:py-20">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -49,11 +49,8 @@ export function TrustBar() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="h-px w-full max-w-md bg-white/[0.05]" />
-
-          {/* Stats grid */}
-          <div className="grid w-full grid-cols-2 gap-px bg-white/[0.05] sm:grid-cols-4">
+          {/* Stats grid — gaps use page bg (black) for a seamless field */}
+          <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {STATS.map((s, i) => (
               <motion.div
                 key={s.label}

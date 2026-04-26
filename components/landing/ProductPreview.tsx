@@ -31,17 +31,26 @@ export function ProductPreview() {
     <section
       ref={containerRef}
       id="product"
-      className="relative overflow-hidden py-24 md:py-48"
+      className="relative overflow-hidden bg-black py-24 md:py-48"
       style={{ perspective: isMobile ? "none" : "1500px" }}
     >
-      {/* Subtle grey radial gradient */}
+      {/* Subtle grey radial gradient — z-0 so bottom feather can stack cleanly */}
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full opacity-[0.04]"
+        className="pointer-events-none absolute -top-40 left-1/2 z-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full opacity-[0.04]"
         style={{
           background:
             "radial-gradient(ellipse, #ffffff 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
+      />
+      {/* Bottom vignette: sits on solid bg-black so Prism behind z-10 never bleeds through */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(24vh,200px)]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 55%, #000000 100%)",
+        }}
+        aria-hidden
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">

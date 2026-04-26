@@ -186,9 +186,7 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings, onOpenBilling,
           >
             {/* Logo + name */}
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10">
-                <ZephrLogo width={18} height={18} />
-              </div>
+              <ZephrLogo className="shrink-0" width={22} height={22} />
               <span className="font-serif text-base font-semibold text-[#e8b84b]">Zephr</span>
             </div>
 
@@ -272,9 +270,7 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings, onOpenBilling,
                 style={{ height: HEADER_H - 24 }} // minus vertical padding
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10">
-                    <ZephrLogo width={18} height={18} />
-                  </div>
+                  <ZephrLogo className="shrink-0" width={22} height={22} />
                   <span className="font-serif text-base font-semibold text-[#e8b84b]">Zephr</span>
                 </div>
 

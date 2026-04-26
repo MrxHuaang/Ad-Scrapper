@@ -77,7 +77,7 @@ function Item({ q, a }: { q: string; a: string }) {
 
 export function FAQ() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative -mt-px bg-black pt-10 md:pt-14 pb-24 md:pb-32">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

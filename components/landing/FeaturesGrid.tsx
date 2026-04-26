@@ -137,12 +137,13 @@ const FEATURES = [
 
 export function FeaturesGrid() {
   return (
-    <section id="features" className="relative py-20 md:py-28">
+    <section id="features" className="relative bg-black py-20 md:py-28">
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
+          /* Single soft wash — no hard mask step at the top (avoids a seam next to Product) */
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,212,127,0.03) 0%, transparent 72%)",
+            "radial-gradient(ellipse 90% 70% at 50% 0%, rgba(0,212,127,0.05) 0%, rgba(0,212,127,0.02) 35%, transparent 72%)",
         }}
       />
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
@@ -153,8 +154,7 @@ export function FeaturesGrid() {
           transition={{ duration: 0.7, ease }}
           className="mb-12"
         >
-          <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#737373]">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#00d47f]" />
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#737373]">
             Platform Capabilities
           </p>
           <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-white">
@@ -169,14 +169,14 @@ export function FeaturesGrid() {
           Row 1: [Feature 1 — col-span-2] [Feature 2 — col-span-1, row-span-2]
           Row 2: [Feature 3 — col-span-1] [Feature 4 — col-span-1]
         */}
-        <div className="grid gap-px bg-white/[0.05] sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
           {/* Feature 1 — large (2/3 width) */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.55, delay: 0, ease }}
-            className="group relative bg-black p-7 transition-colors duration-300 hover:bg-[#090909] sm:col-span-2"
+            className="group relative rounded-2xl bg-black p-7 transition-colors duration-300 hover:bg-[#090909] sm:col-span-2"
           >
             <SpectrumTopEdge />
             <div className="flex items-start justify-between gap-4">
@@ -198,7 +198,7 @@ export function FeaturesGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.55, delay: 0.07, ease }}
-            className="group relative bg-black p-7 transition-colors duration-300 hover:bg-[#090909] sm:row-span-2"
+            className="group relative rounded-2xl bg-black p-7 transition-colors duration-300 hover:bg-[#090909] sm:row-span-2"
           >
             <SpectrumTopEdge />
             <IconBadge icon={FEATURES[1].icon} />
@@ -213,7 +213,7 @@ export function FeaturesGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.55, delay: 0.11, ease }}
-            className="group relative bg-black p-7 transition-colors duration-300 hover:bg-[#090909]"
+            className="group relative rounded-2xl bg-black p-7 transition-colors duration-300 hover:bg-[#090909]"
           >
             <SpectrumTopEdge />
             <IconBadge icon={FEATURES[2].icon} />
@@ -228,7 +228,7 @@ export function FeaturesGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.55, delay: 0.15, ease }}
-            className="group relative bg-black p-7 transition-colors duration-300 hover:bg-[#090909]"
+            className="group relative rounded-2xl bg-black p-7 transition-colors duration-300 hover:bg-[#090909]"
           >
             <SpectrumTopEdge />
             <IconBadge icon={FEATURES[3].icon} />

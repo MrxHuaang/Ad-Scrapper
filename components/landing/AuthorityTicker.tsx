@@ -23,7 +23,7 @@ function Separator() {
 export function AuthorityTicker() {
   return (
     <div
-      className="relative overflow-hidden border-y border-white/[0.06] bg-black/40 py-3"
+      className="relative overflow-hidden bg-black py-3"
       style={{
         maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
         WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",

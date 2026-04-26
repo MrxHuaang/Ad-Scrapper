@@ -12,16 +12,28 @@ const AUTHORITIES = [
 
 export function AuthorityCoverage() {
   return (
-    <section id="regulators" className="relative py-24 md:py-32">
+    <section
+      id="regulators"
+      className="relative z-10 pt-24 md:pt-32 pb-6 md:pb-8"
+    >
       {/* Warm gold glow — bottom-right */}
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
             "radial-gradient(ellipse 50% 60% at 100% 100%, color-mix(in srgb, var(--zl-spectrum-from) 6%, transparent) 0%, color-mix(in srgb, var(--zl-spectrum-to) 8%, transparent) 45%, transparent 62%)",
         }}
       />
-      <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
+      {/* Short feather into FAQ — no extra block below = no visible “cut” line */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-16 md:h-20"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0.75) 100%)",
+        }}
+        aria-hidden
+      />
+      <div className="relative z-[1] mx-auto max-w-6xl px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
