@@ -98,15 +98,6 @@ export function SectionTransition({ type = "glow", className = "" }: SectionTran
     );
   }
 
-  // Default: Glow / Ellipse
-  return (
-    <div className={`relative h-64 w-full overflow-hidden ${className}`}>
-      <div 
-        className="absolute inset-0 flex items-center justify-center"
-        style={{
-          background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(232, 184, 75, 0.07) 0%, transparent 80%)"
-        }}
-      />
-    </div>
-  );
+  // glow / unknown — was an empty h-64 spacer; omit from DOM
+  return null;
 }

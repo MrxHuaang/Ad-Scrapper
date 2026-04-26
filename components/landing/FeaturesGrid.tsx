@@ -137,14 +137,20 @@ const FEATURES = [
 
 export function FeaturesGrid() {
   return (
-    <section id="features" className="relative bg-black py-20 md:py-28">
+    <section
+      id="features"
+      className="relative bg-transparent py-24 md:py-32"
+    >
+      {/* Glow anchored at top edge so it bleeds up into product — avoids a second “band” line */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          /* Single soft wash — no hard mask step at the top (avoids a seam next to Product) */
-          background:
-            "radial-gradient(ellipse 90% 70% at 50% 0%, rgba(0,212,127,0.05) 0%, rgba(0,212,127,0.02) 35%, transparent 72%)",
+          background: [
+            "radial-gradient(ellipse 130% 90% at 50% 0%, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.02) 38%, transparent 62%)",
+            "radial-gradient(ellipse 95% 55% at 50% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 58%)",
+          ].join(", "),
         }}
+        aria-hidden
       />
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <motion.div

@@ -31,24 +31,33 @@ export function ProductPreview() {
     <section
       ref={containerRef}
       id="product"
-      className="relative overflow-hidden bg-black py-24 md:py-48"
+      className="relative overflow-hidden bg-transparent py-24 md:py-32"
       style={{ perspective: isMobile ? "none" : "1500px" }}
     >
-      {/* Subtle grey radial gradient — z-0 so bottom feather can stack cleanly */}
+      {/* Masks parent Prism: solid behind eyebrow + “One dashboard…”, fades so Prism shows from screenshot up */}
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 z-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full opacity-[0.04]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[clamp(24rem,50vh,38rem)]"
         style={{
           background:
-            "radial-gradient(ellipse, #ffffff 0%, transparent 70%)",
-          filter: "blur(80px)",
+            "linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0.7) 72%, rgba(0,0,0,0.2) 88%, transparent 100%)",
         }}
+        aria-hidden
       />
-      {/* Bottom vignette: sits on solid bg-black so Prism behind z-10 never bleeds through */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(24vh,200px)]"
+        className="pointer-events-none absolute -top-16 left-1/2 z-0 h-[min(45vh,380px)] w-[min(100vw,800px)] -translate-x-1/2 rounded-full [mask-image:linear-gradient(to_bottom,black_30%,transparent_100%)]"
+        style={{
+          background: "radial-gradient(ellipse, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 45%, transparent 70%)",
+          filter: "blur(72px)",
+          opacity: 0.5,
+        }}
+        aria-hidden
+      />
+      {/* Soft join into features: no opaque black band — only light vignette */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(22vh,180px)]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 55%, #000000 100%)",
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.28) 100%)",
         }}
         aria-hidden
       />
@@ -74,7 +83,7 @@ export function ProductPreview() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.75, delay: 0.05, ease }}
-          className="mb-24 text-center font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-[-0.01em] text-[#f5f5f5]"
+          className="mb-10 text-center font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-[-0.01em] text-[#f5f5f5] md:mb-14"
         >
           One dashboard.{" "}
           <span className="italic zl-text-spectrum">Every directive.</span>

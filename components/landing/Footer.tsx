@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { LandingSectionLink } from "@/components/landing/LandingSectionLink";
@@ -199,10 +200,26 @@ export function Footer({ compact = false }: FooterProps) {
             </div>
           </div>
 
-          <div className="zl-footer-meta mt-8 flex flex-col items-start justify-between gap-4 border-t border-white/[0.06] pt-6 md:mt-9 md:flex-row md:items-center md:pt-7">
-            <p className="text-[0.8125rem] text-[#525252]">
-              © {new Date().getFullYear()} Zephr. All rights reserved.
-            </p>
+          <div className="zl-footer-meta mt-8 flex flex-col gap-4 border-t border-white/[0.06] pt-6 md:mt-9 md:flex-row md:items-center md:justify-between md:gap-6 md:pt-7">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <p className="text-[0.8125rem] text-[#525252]">
+                © {new Date().getFullYear()} Zephr. All rights reserved.
+              </p>
+              <span
+                className="hidden h-3 w-px shrink-0 bg-white/[0.08] sm:block"
+                aria-hidden
+              />
+              {/* Hyvento wordmark — display size was too small; PNG @2x is fine, no need to re-export just for scale */}
+              <Image
+                src="/Hyvento.png"
+                alt="Hyvento"
+                width={200}
+                height={36}
+                className="h-5 w-auto max-w-[9rem] object-contain object-left opacity-90 sm:h-6 sm:max-w-[11rem] md:h-7"
+                style={{ width: "auto" }}
+                sizes="(max-width: 768px) 128px, 180px"
+              />
+            </div>
             <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[0.6875rem] font-medium tracking-wide text-[#737373]">
               Aviation compliance platform
             </span>

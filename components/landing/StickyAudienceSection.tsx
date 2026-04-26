@@ -105,7 +105,7 @@ export function StickyAudienceSection() {
   return (
     <section
       id="who-its-for"
-      className="relative scroll-mt-24 py-20 md:py-28 lg:py-32"
+      className="relative scroll-mt-24 py-24 md:py-32"
     >
       <div
         className="pointer-events-none absolute inset-0"
