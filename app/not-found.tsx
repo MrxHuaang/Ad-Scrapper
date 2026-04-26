@@ -46,7 +46,7 @@ export default function NotFound() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/search"
+              href="/dashboard"
               className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black transition-colors hover:bg-white/90"
             >
               Go to dashboard

@@ -9,11 +9,12 @@ export async function proxy(request: NextRequest) {
 
   if (AUTH_PATHS.some((p) => pathname.startsWith(p)) && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/search";
+    url.pathname = "/dashboard";
     return Response.redirect(url);
   }
 
   const isAppRoute =
+    pathname.startsWith("/dashboard") ||
     pathname.startsWith("/search") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/ads") ||

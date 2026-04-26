@@ -163,10 +163,11 @@ export function AircraftDashboardView() {
               <button
                 type="button"
                 onClick={() => {
-                  const qs = new URLSearchParams({ tab: "search" });
+                  const qs = new URLSearchParams();
                   if (selected.make) qs.set("make", selected.make);
                   if (selected.model) qs.set("model", selected.model);
-                  router.push(`/search?${qs.toString()}`);
+                  const q = qs.toString();
+                  router.push(q ? `/dashboard/search?${q}` : "/dashboard/search");
                 }}
                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#e8b84b]/25 bg-[#e8b84b]/5 px-2.5 py-1 text-[11px] font-semibold text-[#e8b84b] hover:bg-[#e8b84b]/10 transition-colors"
               >

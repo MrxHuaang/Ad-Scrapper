@@ -117,7 +117,7 @@ export function ProductPreview() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
                 <div className="ml-3 flex-1 rounded bg-[#1a1a1a] px-3 py-1 text-center text-[10px] text-[#737373]">
-                  zephr.app/search
+                  zephr.app/dashboard/search
                 </div>
               </div>
 

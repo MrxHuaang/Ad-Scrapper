@@ -233,6 +233,14 @@
   }
 }
 
+/* Landing (home) — text selection: brand gold (primary) + zephr green */
+.zl-landing ::selection,
+.zl-landing *::selection {
+  background: color-mix(in srgb, var(--zl-gold) 70%, var(--zl-green) 30%);
+  color: #0a0a0a;
+  text-shadow: none;
+}
+
 /* ───── Custom Scrollbar ───── */
 ::-webkit-scrollbar {
   width: 8px;

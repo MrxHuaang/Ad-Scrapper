@@ -90,7 +90,7 @@ export function DashboardOverview({ recentResults }: { recentResults: ADResult[]
           </div>
           <div className="mt-5">
             <Link
-              href="/search?tab=aircraft"
+              href="/dashboard/aircraft"
               className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-white/65 hover:text-white"
             >
               Manage aircraft <ArrowUpRight size={16} className="text-white/30" />
@@ -134,7 +134,7 @@ export function DashboardOverview({ recentResults }: { recentResults: ADResult[]
           </div>
           <div className="mt-5">
             <Link
-              href="/search?tab=saved"
+              href="/dashboard/saved"
               className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-white/65 hover:text-white"
             >
               View all saved <ArrowUpRight size={16} className="text-white/30" />

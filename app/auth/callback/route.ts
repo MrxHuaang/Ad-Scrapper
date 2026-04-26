@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
       const provider = getOauthProviderFromUser(user);
-      const res = NextResponse.redirect(`${origin}/search`);
+      const res = NextResponse.redirect(`${origin}/dashboard`);
       if (provider) {
         res.cookies.set(OAUTH_LAST_COOKIE, provider, {
           path: "/",

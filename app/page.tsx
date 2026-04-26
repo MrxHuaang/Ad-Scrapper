@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <>
+    <div className="zl-landing min-h-dvh">
       <Navbar />
       <main className="bg-black">
         <HeroSection />
@@ -77,6 +77,6 @@ export default function LandingPage() {
         <FAQ />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

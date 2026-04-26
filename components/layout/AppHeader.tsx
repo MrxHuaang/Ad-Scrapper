@@ -156,7 +156,7 @@ export function AppHeader() {
       }}
     >
       {/* Logo */}
-      <Link href="/search" className="flex items-center gap-2.5">
+      <Link href="/dashboard" className="flex items-center gap-2.5">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path d="M3 17L9 3l4 8 5-4 3 14H3z" fill="var(--zl-gold)" opacity="0.9" />
           <path d="M3 17L9 3l4 8 5-4 3 14" stroke="var(--zl-gold)" strokeWidth="1.5" strokeLinejoin="round" fill="none" opacity="0.45" />

@@ -119,7 +119,7 @@ export function AuthForm({ mode, onRegisterSuccess }: AuthFormProps) {
         setLoading(false);
         return;
       }
-      router.push("/search");
+      router.push("/dashboard");
       return;
     }
     const { error: err } = await getSupabase(sbRef).auth.signUp({

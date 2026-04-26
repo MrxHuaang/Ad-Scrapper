@@ -226,11 +226,11 @@ function AdDetailPageInner({
           onClick={() => {
             const from = sp.get("from");
             if (from === "saved") {
-              router.push("/search?tab=saved");
+              router.push("/dashboard/saved");
               return;
             }
             if (typeof window !== "undefined" && window.history.length > 1) router.back();
-            else router.push("/search");
+            else router.push("/dashboard/search");
           }}
           className="inline-flex w-fit cursor-pointer items-center gap-2 text-sm text-white/45 hover:text-white/80"
         >
