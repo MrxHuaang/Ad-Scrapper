@@ -103,6 +103,34 @@ function DashboardAppInner() {
   const [prefillMake, setPrefillMake] = useState("");
   const [prefillModel, setPrefillModel] = useState("");
 
+  // Handle Stripe checkout success — verify session and update plan
+  useEffect(() => {
+    const sessionId = sp.get("session_id");
+    if (!sessionId) return;
+
+    // Clean URL immediately
+    router.replace("/dashboard");
+
+    (async () => {
+      try {
+        const res = await fetch("/api/stripe/verify-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Plan upgraded to ${data.plan}. Refresh to see changes.`, "success");
+        } else {
+          console.error("[verify-session]", data.error);
+        }
+      } catch (e) {
+        console.error("[verify-session]", e);
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // URL segment <-> tab; prefill make/model from query.
   useEffect(() => {
     if (section && section.length > 1) {
