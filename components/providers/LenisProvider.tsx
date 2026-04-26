@@ -1,5 +1,4 @@
 "use client";
-import Lenis from "lenis";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
@@ -14,16 +13,21 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       pathname?.startsWith("/privacy");
     if (!isMarketing) return;
 
-    const lenis = new Lenis({ lerp: 0.08 });
+    let lenis: any;
     let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
+
+    import("lenis").then(({ default: Lenis }) => {
+      lenis = new Lenis({ lerp: 0.08 });
+      function raf(time: number) {
+        lenis.raf(time);
+        rafId = requestAnimationFrame(raf);
+      }
       rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
+    });
+
     return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
+      if (rafId) cancelAnimationFrame(rafId);
+      if (lenis) lenis.destroy();
     };
   }, [pathname]);
   return <>{children}</>;

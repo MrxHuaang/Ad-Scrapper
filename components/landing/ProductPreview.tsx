@@ -129,7 +129,7 @@ export function ProductPreview() {
                   fill
                   className="object-cover object-top"
                   priority
-                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 800px"
                 />
                 {/* Subtle bottom vignette */}
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d0d0d]/60 to-transparent" />

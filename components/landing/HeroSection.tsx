@@ -1,11 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { HeroVisual } from "./HeroVisual";
 import { LandingSectionLink } from "@/components/landing/LandingSectionLink";
-
-const ease = [0.16, 1, 0.3, 1] as const;
 
 export function HeroSection() {
   return (
@@ -51,47 +46,31 @@ export function HeroSection() {
       <div className="relative z-[10] mx-auto w-full max-w-6xl px-6 lg:px-8">
         <div className="max-w-xl">
 
-          <motion.h1
+          <h1
             className="font-[family-name:var(--font-cormorant)] text-[clamp(3rem,7vw,5.5rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-white"
           >
             {["Compliance", "tracking"].map((text, i) => (
               <div key={text} className="overflow-hidden">
-                <motion.span
-                  className="block"
-                  initial={{ y: "100%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.05 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                >
+                <span className="block">
                   {text}
-                </motion.span>
+                </span>
               </div>
             ))}
             <div className="overflow-hidden">
-              <motion.span
-                className="italic zl-text-spectrum block"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              >
+              <span className="italic zl-text-spectrum block">
                 for aviation.
-              </motion.span>
+              </span>
             </div>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.2, ease }}
+          <p
             className="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-[#737373]"
           >
             One platform. Every AD from FAA, EASA, Transport Canada, and ANAC.
             Updated every 24 hours.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.3, ease }}
+          <div
             className="mt-10 flex flex-wrap items-center gap-3"
           >
             <Link
@@ -114,7 +93,7 @@ export function HeroSection() {
                 →
               </span>
             </LandingSectionLink>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

@@ -9,7 +9,7 @@ import { AuthorityCoverage } from "@/components/landing/AuthorityCoverage";
 import { FAQ } from "@/components/landing/FAQ";
 import { SectionTransition } from "@/components/landing/SectionTransition";
 import { Footer } from "@/components/landing/Footer";
-import Prism from "@/components/landing/Prism";
+import { PrismWrapper } from "@/components/landing/PrismWrapper";
 
 export const metadata: Metadata = {
   title: "Zephr — Airworthiness Directives",
@@ -34,7 +34,7 @@ export default function LandingPage() {
             Hero + Brand are outside this wrapper; first pixels here = Platform Overview. */}
           <div className="prism-reveal pointer-events-none absolute inset-0 z-0 overflow-clip">
             <div className="sticky top-0 h-dvh min-h-dvh w-full opacity-[0.34] [transform:translateZ(0)] sm:opacity-40">
-              <Prism
+              <PrismWrapper
                 animationType="rotate"
                 timeScale={0.15}
                 height={3.5}
