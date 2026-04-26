@@ -9,6 +9,7 @@ import { StickyAudienceSection } from "@/components/landing/StickyAudienceSectio
 import { AuthorityCoverage } from "@/components/landing/AuthorityCoverage";
 import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
+import { HomeHashScroll } from "@/components/landing/HomeHashScroll";
 import Prism from "@/components/landing/Prism";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function LandingPage() {
   return (
     <>
       <Navbar />
+      <HomeHashScroll />
       <main className="bg-black">
         <HeroSection />
 

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { HeroVisual } from "./HeroVisual";
+import { LandingSectionLink } from "@/components/landing/LandingSectionLink";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -100,8 +101,8 @@ export function HeroSection() {
               Get Started
             </Link>
 
-            <a
-              href="#product"
+            <LandingSectionLink
+              sectionId="product"
               className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full border border-white/[0.12] bg-white/[0.06] px-6 py-3 text-sm text-[#a1a1a1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_36px_-20px_var(--zl-spectrum-glow)] active:scale-[0.97]"
             >
               <span
@@ -112,7 +113,7 @@ export function HeroSection() {
               <span aria-hidden className="text-base leading-none transition-transform duration-200 group-hover:translate-x-0.5">
                 →
               </span>
-            </a>
+            </LandingSectionLink>
           </motion.div>
         </div>
       </div>

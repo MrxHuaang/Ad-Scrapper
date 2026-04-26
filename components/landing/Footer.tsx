@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { LandingSectionLink } from "@/components/landing/LandingSectionLink";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const MENU_LINKS = [
-  { label: "Product", href: "/#product" },
-  { label: "Features", href: "/#features" },
-  { label: "Who it’s for", href: "/#who-its-for" },
-  { label: "Pricing", href: "/pricing" },
+const MENU_LINKS: (
+  | { label: string; type: "section"; sectionId: string }
+  | { label: string; type: "page"; href: string }
+)[] = [
+  { type: "section", label: "Product", sectionId: "product" },
+  { type: "section", label: "Features", sectionId: "features" },
+  { type: "page", label: "Pricing", href: "/pricing" },
 ];
 
 const LEGAL_LINKS = [
@@ -135,12 +138,21 @@ export function Footer({ compact = false }: FooterProps) {
                 <ul className="space-y-2.5 sm:text-right md:space-y-3">
                   {MENU_LINKS.map((link) => (
                     <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className="zl-link-subtle zl-link-subtle-end text-sm text-[#a1a1a1] transition-colors hover:text-white"
-                      >
-                        {link.label}
-                      </Link>
+                      {link.type === "section" ? (
+                        <LandingSectionLink
+                          sectionId={link.sectionId}
+                          className="zl-link-subtle zl-link-subtle-end text-sm text-[#a1a1a1] transition-colors hover:text-white"
+                        >
+                          {link.label}
+                        </LandingSectionLink>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="zl-link-subtle zl-link-subtle-end text-sm text-[#a1a1a1] transition-colors hover:text-white"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

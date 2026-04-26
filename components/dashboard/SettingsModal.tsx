@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { X, User, Gauge, Settings2, CreditCard, Check, Minus } from "lucide-react";
+import { X, User, Gauge, Settings2, CreditCard, Check, Minus, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 type SettingsTab = "general" | "account" | "usage" | "billing";
@@ -66,19 +66,43 @@ export function SettingsModal({
 }) {
   const { user, plan } = useAuth();
   const [tab, setTab] = useState<SettingsTab>(() => initialTab ?? "general");
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (initialTab && open) setTab(initialTab);
   }, [initialTab, open]);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  const handleCheckout = async (planId: string) => {
+    if (planId === "free") return;
+    
+    try {
+      setCheckoutLoading(planId);
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId }),
+      });
+      
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        const { showToast } = await import("@/hooks/useToast");
+        showToast(data.error || "Could not initiate checkout", "error");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
 
   const displayName =
     user?.user_metadata?.full_name ?? user?.email ?? "User";
   const email = user?.email ?? "—";
 
   const usage = useMemo(() => {
-    // Real usage metrics should come from backend; for now keep it deterministic + presentable.
-    // If you later add limits, this becomes a real meter.
     const usedPct = 68;
     return {
       usedPct,
@@ -99,9 +123,6 @@ export function SettingsModal({
     return "dark";
   });
   const [dirtyTheme, setDirtyTheme] = useState(false);
-  // NOTE: This component unmounts when `open` is false. We avoid setState-in-effect
-  // by initializing per-open state via lazy initializers + user actions.
-  // If you need to change the initial tab, pass `initialTab` before opening.
 
   const applyTheme = () => {
     const next = pendingTheme;
@@ -122,7 +143,6 @@ export function SettingsModal({
 
   useEffect(() => {
     if (!open) return;
-    // Focus panel for accessibility.
     panelRef.current?.focus();
   }, [open]);
 
@@ -135,7 +155,6 @@ export function SettingsModal({
       aria-modal="true"
       aria-label="Settings"
     >
-      {/* Backdrop */}
       <button
         type="button"
         aria-label="Close settings"
@@ -143,14 +162,12 @@ export function SettingsModal({
         onClick={onClose}
       />
 
-      {/* Panel */}
       <div
         ref={panelRef}
         tabIndex={-1}
         className="relative z-[101] w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[var(--surface-2)] shadow-[0_40px_120px_rgba(0,0,0,0.65)]"
       >
         <div className="flex h-[min(78vh,720px)]">
-          {/* Left nav */}
           <aside className="w-[260px] shrink-0 border-r border-white/10 bg-[var(--surface)] p-4">
             <div className="flex items-center justify-between px-2 py-2">
               <div className="min-w-0">
@@ -195,11 +212,8 @@ export function SettingsModal({
                 label="Billing"
               />
             </div>
-
-            <div className="mt-auto hidden" />
           </aside>
 
-          {/* Content */}
           <section className="min-w-0 flex-1 overflow-y-auto p-6">
             {tab === "general" && (
               <div className="max-w-2xl">
@@ -344,15 +358,19 @@ export function SettingsModal({
                   <PlanCard 
                     name="Pro" 
                     price="29" 
-                    current={plan === "pro"} 
+                    current={plan === "pro"}
                     description="For active operators"
                     highlight
+                    onUpgrade={() => handleCheckout("professional")}
+                    loading={checkoutLoading === "professional"}
                   />
                   <PlanCard 
                     name="Team" 
                     price="99" 
                     current={plan === "team"} 
                     description="For maintenance shops"
+                    onUpgrade={() => handleCheckout("team")}
+                    loading={checkoutLoading === "team"}
                   />
                 </div>
 
@@ -387,12 +405,14 @@ export function SettingsModal({
   );
 }
 
-function PlanCard({ name, price, current, description, highlight }: { 
+function PlanCard({ name, price, current, description, highlight, onUpgrade, loading }: { 
   name: string; 
   price: string; 
   current: boolean; 
   description: string;
   highlight?: boolean;
+  onUpgrade?: () => void;
+  loading?: boolean;
 }) {
   return (
     <div className={`relative flex flex-col rounded-2xl p-6 transition-all duration-300 ${
@@ -422,16 +442,18 @@ function PlanCard({ name, price, current, description, highlight }: {
 
       <button
         type="button"
-        disabled={current}
-        className={`mt-6 w-full rounded-xl py-2.5 text-xs font-bold tracking-wide transition-all ${
+        onClick={onUpgrade}
+        disabled={current || loading}
+        className={`mt-6 w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold tracking-wide transition-all ${
           current 
             ? "bg-white/[0.03] border border-white/5 text-white/20 cursor-default" 
             : highlight
               ? "bg-[#e8b84b] text-black hover:bg-[#d4a040] shadow-[0_10px_20px_rgba(232,184,75,0.15)] active:scale-[0.98] cursor-pointer"
               : "bg-white text-black hover:bg-white/90 active:scale-[0.98] cursor-pointer shadow-lg"
-        }`}
+        } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-        {current ? "Current plan" : "Upgrade now"}
+        {loading && <Loader2 size={14} className="animate-spin" />}
+        {current ? "Current plan" : loading ? "Connecting..." : "Upgrade now"}
       </button>
     </div>
   );
@@ -474,4 +496,3 @@ function NavItem({
     </button>
   );
 }
-
