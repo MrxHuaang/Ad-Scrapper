@@ -1,33 +1,35 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { 
-  Search, 
-  LayoutDashboard, 
-  Bookmark, 
-  BarChart3, 
-  ChevronLeft, 
+import {
+  Search,
+  LayoutDashboard,
+  Bookmark,
+  BarChart3,
+  ChevronLeft,
   Zap,
   Download,
   Eye,
   BellRing,
   Newspaper,
+  Plane,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileMenu } from "./ProfileMenu";
 import { useSidebar } from "@/components/providers/SidebarProvider";
 
-// Theme is now managed in SettingsModal with an explicit Apply step.
-
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onOpenSettings?: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "search", label: "ADs", icon: Search },
+  { id: "aircraft", label: "Aircraft", icon: Plane },
   { id: "saved", label: "Saved searches", icon: Bookmark },
   { id: "watchlist", label: "Watchlist", icon: Eye },
   { id: "exports", label: "Exports", icon: Download },
@@ -39,16 +41,12 @@ const TOOL_ITEMS = [
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ] as const;
 
-export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps) {
+export function Sidebar({ activeTab, onTabChange, onOpenSettings, mobileOpen = false, onMobileClose }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { resultCount } = useSidebar();
   const openSettings = onOpenSettings ?? undefined;
 
   const authorities = useMemo(() => {
-    // Minimal “real data”: show configured authorities; counts show only once results are present in the app.
-    // We can’t access the full results array here without threading it through props,
-    // so we show a lightweight count summary using provider state for now.
-    // (Counts per authority will be populated in a follow-up pass via props.)
     return [
       { key: "FAA", label: "FAA", count: null as number | null },
       { key: "EASA", label: "EASA", count: null as number | null },
@@ -61,11 +59,25 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps
 
   return (
     <>
-    <motion.div
-      animate={{ width: isCollapsed ? 76 : 244 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative flex h-full flex-col border-r border-white/5 bg-[var(--surface)] px-3 py-3"
-    >
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
+          onClick={onMobileClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <motion.div
+        animate={{ width: isCollapsed ? 76 : 244 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className={[
+          "relative flex h-full flex-col border-r border-white/5 bg-[var(--surface)] px-3 py-3",
+          // Mobile: fixed overlay, hidden by default
+          "fixed inset-y-0 left-0 z-50 md:relative md:z-auto md:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+        ].join(" ")}
+      >
       {/* Brand */}
       <div className="mb-5 mt-1 flex items-center px-1.5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10">
@@ -89,7 +101,7 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white/80"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={isCollapsed ? "Expand" : "Collapse"}
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <motion.div
             animate={{ rotate: isCollapsed ? 180 : 0 }}
@@ -114,7 +126,9 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps
             return (
               <button
                 key={item.id}
-                onClick={() => onTabChange(item.id)}
+                onClick={() => {
+                  onTabChange(item.id);
+                }}
                 className={[
                   "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-[13px] transition-colors",
                   isActive
@@ -157,10 +171,7 @@ export function Sidebar({ activeTab, onTabChange, onOpenSettings }: SidebarProps
                 </div>
               ))}
               <div className="mt-1 px-2.5 pb-1 text-[11px] text-white/20">
-                Current results:{" "}
-                <span className="text-white/35 tabular-nums">
-                  {resultCount.toLocaleString()}
-                </span>
+                Current results: {resultCount.toLocaleString()}
               </div>
             </div>
           </div>

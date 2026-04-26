@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 import { Database, RefreshCw, Globe2, Activity } from "lucide-react";
 import type { ADResult } from "@/types";
 import { SOURCE_SHORT, normalizeSource } from "@/components/search/searchUtils";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 function isSameDay(a: Date, b: Date) {
   return (
@@ -20,7 +20,7 @@ function parseDate(d: string | undefined): Date | null {
   return Number.isNaN(dt.getTime()) ? null : dt;
 }
 
-export function StatCards({ results }: { results: ADResult[] }) {
+export function StatCards({ results, loading }: { results: ADResult[]; loading?: boolean }) {
   const kpis = useMemo(() => {
     const total = results.length;
 
@@ -38,7 +38,7 @@ export function StatCards({ results }: { results: ADResult[] }) {
     }
 
     const activeAuthorities = Object.keys(byAuthority).length;
-    const configuredAuthorities = 9; // SOURCE_KEYS excluding "all"
+    const configuredAuthorities = 9;
     const coverage = configuredAuthorities
       ? (activeAuthorities / configuredAuthorities) * 100
       : 0;
@@ -51,7 +51,7 @@ export function StatCards({ results }: { results: ADResult[] }) {
     };
   }, [results]);
 
-  const STATS = [
+  const STATS = useMemo(() => [
     {
       label: "ADs indexed",
       value: kpis.total.toLocaleString(),
@@ -76,19 +76,39 @@ export function StatCards({ results }: { results: ADResult[] }) {
       icon: Activity,
       change: "Authorities with data / configured",
     },
-  ] as const;
+  ], [kpis, results.length]);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-4 w-4 rounded-sm" />
+              <Skeleton className="h-3 w-28" />
+            </div>
+            <div className="mt-4">
+              <Skeleton className="h-9 w-20" />
+            </div>
+            <div className="mt-3">
+              <Skeleton className="h-3 w-40" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {STATS.map((stat, i) => (
-        <motion.div
+      {STATS.map((stat) => (
+        <div
           key={stat.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: i * 0.1 }}
           className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-md"
         >
-          {/* Subtle brand glow behind icon */}
           <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-[0.03]"
             style={{ background: "var(--zl-gold)", filter: "blur(24px)" }}
           />
@@ -105,7 +125,7 @@ export function StatCards({ results }: { results: ADResult[] }) {
           <div className="mt-2 text-[11px] font-medium text-white/20">
             <span>{stat.change}</span>
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

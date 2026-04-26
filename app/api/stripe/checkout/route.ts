@@ -1,8 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const stripe = getStripe();
+  if (!stripe) {
+    return NextResponse.json({ error: "Stripe is not configured" }, { status: 501 });
+  }
+
   try {
     const { planId } = await req.json();
     const supabase = await createClient();

@@ -21,7 +21,7 @@ export function SearchStatus({ status, count, ms, errors }: SearchStatusProps) {
             style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", color: "#fbbf24" }}
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
-            Searching…
+            Searching...
           </span>
         )}
         {status === "done" && (

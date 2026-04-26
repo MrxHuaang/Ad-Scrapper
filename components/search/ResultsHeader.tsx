@@ -32,7 +32,7 @@ export function ResultsHeader({
     >
       {/* Count */}
       <div className="flex items-baseline gap-2 mr-auto">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Results</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">results</span>
         <span className="text-sm font-bold text-white">{shown.toLocaleString()}</span>
         {isFiltered && (
           <span className="text-xs text-white/30">/ {total.toLocaleString()}</span>
@@ -51,7 +51,7 @@ export function ResultsHeader({
           type="text"
           value={quickFilter}
           onChange={(e) => onQuickFilterChange(e.target.value)}
-          placeholder="Filter results…"
+          placeholder="Filter results..."
           className="w-40 rounded-lg py-1.5 pl-8 pr-3 text-[12px] text-white/70 placeholder:text-white/25 transition-all focus:w-56 focus:outline-none"
           style={{ background: "#141414", border: "1px solid #252525" }}
         />
@@ -86,13 +86,13 @@ export function ResultsHeader({
         <LinkIcon size={13} />
       </button>
 
-      {/* Export buttons — liquid glass */}
+      {/* Export buttons */}
       {[
-        { label: "CSV", fn: onExportCsv },
-        { label: "Excel", fn: onExportExcel },
-      ].map(({ label, fn }) => (
+        { id: "csv", label: "CSV", fn: onExportCsv },
+        { id: "excel", label: "Excel", fn: onExportExcel },
+      ].map(({ id, label, fn }) => (
         <button
-          key={label}
+          key={id}
           type="button"
           onClick={fn}
           className="cursor-pointer inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-medium text-white/45 backdrop-blur-sm transition-all hover:text-white/80"

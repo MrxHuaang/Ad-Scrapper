@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 function toGview(url: string) {
   // Google gview works even when the PDF host blocks iframes via X-Frame-Options.
@@ -21,6 +22,7 @@ export function PdfInlinePreview({
   className?: string;
 }) {
   const [mode, setMode] = useState<"proxy" | "viewer" | "direct">("proxy");
+  const [frameLoaded, setFrameLoaded] = useState(false);
   const iframeSrc = useMemo(() => {
     if (mode === "proxy") return toProxy(url);
     if (mode === "viewer") return toGview(url);
@@ -63,12 +65,33 @@ export function PdfInlinePreview({
           </Link>
         </div>
       </div>
-      <div className="h-[70vh] overflow-hidden bg-black/10">
+      <div className="relative h-[70vh] overflow-hidden bg-black/10">
+        {!frameLoaded && (
+          <div className="absolute inset-0 z-10 p-4">
+            <div className="h-full rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-3 w-14" />
+                <Skeleton className="h-3 w-10" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+              <div className="mt-4 grid grid-cols-12 gap-3">
+                <Skeleton className="col-span-8 h-3" />
+                <Skeleton className="col-span-4 h-3" />
+              </div>
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <Skeleton key={i} className="h-5 w-full rounded-lg" />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         <iframe
           title="PDF preview"
           src={iframeSrc}
           className="h-full w-full"
           style={{ border: "none" }}
+          onLoad={() => setFrameLoaded(true)}
         />
       </div>
     </div>

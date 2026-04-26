@@ -1,6 +1,8 @@
 "use client";
 
-import { use, useEffect, useMemo, useRef, useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bookmark, CheckCircle2, ExternalLink, Save, Check } from "lucide-react";
 import type { ADResult } from "@/types";
@@ -26,7 +28,7 @@ function decodeParam(v: string | null) {
   }
 }
 
-export default function AdDetailPage({
+function AdDetailPageInner({
   params: paramsPromise,
 }: {
   params: Promise<{ adNumber: string }>;
@@ -392,3 +394,10 @@ export default function AdDetailPage({
   );
 }
 
+export default function AdDetailPage(props: { params: Promise<{ adNumber: string }> }) {
+  return (
+    <Suspense fallback={null}>
+      <AdDetailPageInner {...props} />
+    </Suspense>
+  );
+}

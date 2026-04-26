@@ -1,4 +1,4 @@
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
@@ -10,6 +10,11 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: Request) {
+  const stripe = getStripe();
+  if (!stripe) {
+    return new NextResponse("Stripe is not configured", { status: 501 });
+  }
+
   const body = await req.text();
   const signature = (await headers()).get("Stripe-Signature") as string;
 

@@ -213,6 +213,24 @@ export async function toggleReviewedAd(ad: AdKey, nextReviewed: boolean) {
   if (error) throw error;
 }
 
+export type ReviewedAdRow = {
+  ad_number: string;
+  source: string;
+  reviewed_at: string;
+};
+
+export async function listMyReviewedAds(limit = 20): Promise<ReviewedAdRow[]> {
+  const { supabase, userId } = await requireUserId();
+  const { data, error } = await supabase
+    .from("ad_reviewed")
+    .select("ad_number, source, reviewed_at")
+    .eq("user_id", userId)
+    .order("reviewed_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as ReviewedAdRow[];
+}
+
 export async function upsertAdNote(ad: AdKey, body: string, noteId?: string) {
   const { supabase, userId } = await requireUserId();
 

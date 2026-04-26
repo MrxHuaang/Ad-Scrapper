@@ -1,9 +1,44 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 
 const ease = [0.16, 1, 0.3, 1] as const;
+
+function CountUp({
+  to,
+  prefix = "",
+  suffix = "",
+  duration = 1600,
+}: {
+  to: number;
+  prefix?: string;
+  suffix?: string;
+  duration?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(eased * to));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [inView, to, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{val.toLocaleString()}{suffix}
+    </span>
+  );
+}
 
 function GlassCard({
   children,
@@ -161,7 +196,7 @@ export function StickyAudienceSection() {
               className="rounded-2xl border border-white/10 bg-white p-8 shadow-[0_24px_64px_-24px_rgba(0,0,0,0.4)] md:rounded-3xl md:p-10"
             >
               <p className="font-sans text-5xl font-semibold tracking-[-0.04em] text-black md:text-6xl">
-                +90%
+                +<CountUp to={90} suffix="%" duration={1400} />
               </p>
               <p className="mt-3 text-sm font-medium text-neutral-600 md:text-base">
                 Less time spent searching
@@ -170,7 +205,7 @@ export function StickyAudienceSection() {
 
             <GlassCard delay={0.04}>
               <p className="font-sans text-5xl font-semibold tracking-[-0.04em] text-white md:text-6xl">
-                −60%
+                −<CountUp to={60} suffix="%" duration={1300} />
               </p>
               <p className="mt-3 text-sm font-medium text-[#a3a3a3] md:text-base">
                 Regulatory risk exposure
@@ -179,7 +214,7 @@ export function StickyAudienceSection() {
 
             <GlassCard delay={0.08} className="mb-4">
               <p className="font-sans text-5xl font-semibold tracking-[-0.04em] text-white md:text-6xl">
-                200K+
+                <CountUp to={200} suffix="K+" duration={1600} />
               </p>
               <p className="mt-3 text-sm font-medium text-[#a3a3a3] md:text-base">
                 Records indexed and updated

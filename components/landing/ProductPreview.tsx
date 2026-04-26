@@ -1,6 +1,6 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import dashboardImg from "@/public/dashboard-preview.png";
 
@@ -8,23 +8,31 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export function ProductPreview() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
-  // Amplified parallax: the image will lift up -150px and tilt more aggressively
-  const y = useTransform(scrollYProgress, [0, 1], [100, -200]);
-  const rotateX = useTransform(scrollYProgress, [0, 1], [12, -10]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1.02, 0.95]);
+  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [30, -60] : [100, -200]);
+  const rotateX = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [12, -10]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], isMobile ? [1, 1, 1] : [0.95, 1.02, 0.95]);
 
   return (
     <section
       ref={containerRef}
       id="product"
       className="relative overflow-hidden py-24 md:py-48"
-      style={{ perspective: "1500px" }}
+      style={{ perspective: isMobile ? "none" : "1500px" }}
     >
       {/* Subtle grey radial gradient */}
       <div

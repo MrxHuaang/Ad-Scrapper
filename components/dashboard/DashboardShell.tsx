@@ -15,6 +15,7 @@ export function DashboardShell({
   onQueryChange,
   results,
   configuredAuthorities,
+  rightRailLoading,
   children,
 }: {
   activeTab: string;
@@ -23,28 +24,37 @@ export function DashboardShell({
   onQueryChange: (v: string) => void;
   results: ADResult[];
   configuredAuthorities: string[];
+  rightRailLoading?: boolean;
   children: ReactNode;
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<
     "general" | "account" | "usage" | "billing"
   >("general");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="flex h-dvh bg-[var(--bg)]">
       <Sidebar
         activeTab={activeTab}
-        onTabChange={onTabChange}
+        onTabChange={(tab) => {
+          onTabChange(tab);
+          setMobileNavOpen(false);
+        }}
         onOpenSettings={() => {
           setSettingsTab("general");
           setSettingsOpen(true);
+          setMobileNavOpen(false);
         }}
+        mobileOpen={mobileNavOpen}
+        onMobileClose={() => setMobileNavOpen(false)}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopbar
           query={query}
           onQueryChange={onQueryChange}
+          onMobileMenuOpen={() => setMobileNavOpen(true)}
         />
 
         <div className="flex min-h-0 flex-1">
@@ -55,6 +65,7 @@ export function DashboardShell({
             <RightRail
               results={results}
               configuredAuthorities={configuredAuthorities}
+              loading={rightRailLoading}
             />
           )}
         </div>
@@ -68,4 +79,3 @@ export function DashboardShell({
     </div>
   );
 }
-

@@ -7,17 +7,17 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { response, user } = await refreshSession(request);
 
-  // Authenticated user visiting auth pages → redirect to /search
   if (AUTH_PATHS.some((p) => pathname.startsWith(p)) && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/search";
     return Response.redirect(url);
   }
 
-  // Unauthenticated user visiting app routes → redirect to /login
   const isAppRoute =
     pathname.startsWith("/search") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/ads") ||
+    pathname.startsWith("/aircraft");
 
   if (isAppRoute && !user) {
     const url = request.nextUrl.clone();

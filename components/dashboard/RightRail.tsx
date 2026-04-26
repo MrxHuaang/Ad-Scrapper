@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { ADResult } from "@/types";
 import { SOURCE_SHORT, normalizeSource } from "@/components/search/searchUtils";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
@@ -14,7 +15,6 @@ function formatPct(v: number) {
 
 function parseYmd(d: string | undefined): Date | null {
   if (!d) return null;
-  // Expecting YYYY-MM-DD; fall back to Date parsing if needed.
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d);
   if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
   const fallback = new Date(d);
@@ -24,9 +24,11 @@ function parseYmd(d: string | undefined): Date | null {
 export function RightRail({
   results,
   configuredAuthorities,
+  loading,
 }: {
   results: ADResult[];
   configuredAuthorities: string[];
+  loading?: boolean;
 }) {
   const coverage = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -58,7 +60,6 @@ export function RightRail({
   }, [results]);
 
   const activity = useMemo(() => {
-    // Lightweight “activity”: take the latest N results and show source + effective date.
     const last = results.slice(-8).reverse();
     return last.map((r) => {
       const key = normalizeSource(r.Source);
@@ -77,11 +78,74 @@ export function RightRail({
   }, [results]);
 
   const allAuthoritiesLabel = useMemo(() => {
-    // Show configured authorities list only when there are no results.
     return configuredAuthorities.length > 0
       ? configuredAuthorities.join(" · ")
       : "—";
   }, [configuredAuthorities]);
+
+  if (loading) {
+    return (
+      <aside className="hidden w-[380px] shrink-0 border-l border-white/5 bg-[var(--surface)] lg:block">
+        <div className="h-full overflow-y-auto px-5 py-6">
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/30">
+              Live activity
+            </h3>
+            <div className="mt-4 space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="mt-2 h-3 w-full" />
+                  <Skeleton className="mt-1 h-3 w-5/6" />
+                  <Skeleton className="mt-3 h-3 w-24" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/30">
+              Coverage
+            </h3>
+            <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="flex items-baseline justify-between">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-10" />
+              </div>
+              <div className="mt-3">
+                <Skeleton className="h-2 w-full rounded-full" />
+              </div>
+              <div className="mt-4 space-y-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-3 w-10" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/30">
+              AD types
+            </h3>
+            <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="h-2 flex-1 rounded-full" />
+                    <Skeleton className="h-3 w-[120px]" />
+                    <Skeleton className="h-3 w-10" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="hidden w-[380px] shrink-0 border-l border-white/5 bg-[var(--surface)] lg:block">
@@ -143,7 +207,7 @@ export function RightRail({
               />
             </div>
             <p className="mt-2 text-[11px] text-white/25">
-              Global coverage: <span className="text-white/45">{formatPct(coverage.pct)}</span>
+              Global coverage: {formatPct(coverage.pct)}
             </p>
 
             <div className="mt-4 space-y-2">
@@ -164,23 +228,23 @@ export function RightRail({
           <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/30">
             AD types
           </h3>
-          <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+          <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.02] p-2 pr-4">
             {productTypes.length === 0 ? (
-              <p className="text-sm text-white/35">No data yet.</p>
+              <p className="px-2 py-2 text-sm text-white/35">No data yet.</p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {productTypes.map((t) => (
-                  <div key={t.label} className="flex items-center gap-3">
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/5">
+                  <div key={t.label} className="flex items-center gap-3 hover:bg-white/[0.02] px-2 py-1.5 rounded-lg transition-colors">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/5">
                       <div
                         className="h-full rounded-full bg-white/20"
                         style={{ width: `${t.pct}%` }}
                       />
                     </div>
-                    <div className="w-[120px] truncate text-[12px] text-white/35">
+                    <div className="w-[100px] truncate text-[11px] font-medium text-white/35">
                       {t.label}
                     </div>
-                    <div className="w-12 text-right text-[12px] tabular-nums text-white/55">
+                    <div className="w-10 text-right text-[11px] tabular-nums text-white/55 font-semibold">
                       {Math.round(t.pct)}%
                     </div>
                   </div>
@@ -193,4 +257,3 @@ export function RightRail({
     </aside>
   );
 }
-

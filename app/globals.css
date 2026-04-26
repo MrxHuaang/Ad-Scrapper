@@ -422,6 +422,12 @@
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* ───── Infinite grid CSS animation (replaces JS rAF loop) ───── */
+@keyframes zl-grid-scroll {
+  from { background-position: 0px 0px; }
+  to   { background-position: 40px 40px; }
+}
+
 /* ───── Prism background reveal ───── */
 @keyframes prism-reveal {
   from { opacity: 0; }

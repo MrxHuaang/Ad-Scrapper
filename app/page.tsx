@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { TrustBar } from "@/components/landing/TrustBar";
+import { AuthorityTicker } from "@/components/landing/AuthorityTicker";
 import { ProductPreview } from "@/components/landing/ProductPreview";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
-import { AuthorityCoverage } from "@/components/landing/AuthorityCoverage";
 import { StickyAudienceSection } from "@/components/landing/StickyAudienceSection";
+import { AuthorityCoverage } from "@/components/landing/AuthorityCoverage";
+import { PricingSection } from "@/components/landing/PricingSection";
+import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
 import Prism from "@/components/landing/Prism";
 
@@ -20,56 +24,56 @@ export default function LandingPage() {
       <Navbar />
       <main className="bg-black">
         <HeroSection />
-        
-        {/* Container for everything after the Hero */}
+
+        {/* Social proof — immediately establishes trust */}
+        <TrustBar />
+
+        {/* Authority ticker — connects trust bar to product section */}
+        <AuthorityTicker />
+
+        {/* Prism + product sections */}
         <div className="relative">
-          {/* 
-            The Prism background:
-            - position absolute filling the entire container height
-            - maskImage: invisible at the top to fade perfectly from the black Hero, taking 250px to become fully visible. 
-          */}
-          <div 
+          <div
             className="prism-reveal pointer-events-none absolute inset-0 z-0 overflow-clip"
             style={{
-              // Smooth the fade-in to avoid 1px seams between sections on some GPUs/browsers.
               maskImage:
-                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 220px, rgba(0,0,0,1) 100%)",
+                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 200px, rgba(0,0,0,1) 100%)",
               WebkitMaskImage:
-                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 220px, rgba(0,0,0,1) 100%)",
+                "linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 48px, rgba(0,0,0,1) 200px, rgba(0,0,0,1) 100%)",
             }}
           >
-            {/* 
-              sticky top-0 makes the shader fixed on the screen as you scroll,
-              driving a beautiful parallax effect behind the cards.
-              We use opacity-30 here instead of turning down the shader glow, 
-              so the cloudy volume remains large but subtle.
-            */}
             <div className="sticky top-0 h-dvh min-h-dvh w-full opacity-30 [transform:translateZ(0)]">
-              <Prism 
+              <Prism
                 animationType="rotate"
                 timeScale={0.15}
                 height={3.5}
                 baseWidth={5.5}
-                scale={3.6} // Full scale
+                scale={3.6}
                 hueShift={0}
                 colorFrequency={1}
                 noise={0.1}
-                glow={1} // Restore original glow to maintain full shape volume
-                colorSaturation={0} // Grayscale
+                glow={1}
+                colorSaturation={0}
                 transparent={true}
                 suspendWhenOffscreen={false}
               />
             </div>
           </div>
 
-          {/* Foreground content. Sections now have bg-transparent so the sticky Prism shows through the gaps */}
-          <div className="relative z-10 w-full pb-20">
+          <div className="relative z-10 w-full">
             <ProductPreview />
+            <div className="h-px bg-white/[0.04]" />
             <FeaturesGrid />
             <StickyAudienceSection />
             <AuthorityCoverage />
           </div>
         </div>
+
+        {/* Pricing — no need to leave the page */}
+        <PricingSection />
+
+        {/* FAQ — handle objections before checkout */}
+        <FAQ />
       </main>
       <Footer />
     </>

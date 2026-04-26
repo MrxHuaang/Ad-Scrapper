@@ -41,8 +41,35 @@ export function Navbar() {
 
           {/* Left: Brand */}
           <div className="flex shrink-0 items-center">
-            <Link href="/" className="text-xl font-semibold tracking-tight text-white">
-              Zephr
+            <Link href="/" className="flex items-center gap-2.5">
+              {/* Logomark: compliance arc + checkmark */}
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                {/* 270° arc, gap at lower-right — radar / compliance loop */}
+                <path
+                  d="M 18.36 5.64 A 9 9 0 1 0 5.64 18.36"
+                  stroke="#e8b84b"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                />
+                {/* Checkmark inside */}
+                <path
+                  d="M 8 12 L 11 15 L 16 9"
+                  stroke="#e8b84b"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-[1.125rem] font-semibold tracking-[-0.01em] text-white">
+                Zephr
+              </span>
             </Link>
           </div>
 
@@ -69,7 +96,7 @@ export function Navbar() {
               href="/login"
               className="ml-2 flex items-center gap-2 rounded-full bg-black/80 px-4 py-2 text-sm font-medium text-white shadow-[0_0_0_1px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all hover:bg-black"
             >
-              Iniciar Sesión
+              Sign in
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-black">
                 <svg
                   viewBox="0 0 24 24"
@@ -134,7 +161,7 @@ export function Navbar() {
           <Link
             href="/login"
             onClick={() => setMobileOpen(false)}
-            className="mt-6 flex items-center gap-3 rounded-full bg-white px-8 py-3 text-lg font-semibold text-black"
+            className="mt-8 flex items-center gap-3 rounded-full bg-white px-8 py-3 text-base font-semibold text-black"
           >
             Log in
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white">

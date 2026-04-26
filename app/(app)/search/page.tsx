@@ -1,6 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, X, Zap } from "lucide-react";
 import type { ADResult, SearchParams } from "@/types";
@@ -51,7 +53,7 @@ const SESSION_KEY = "zephr_session";
 const SESSION_TTL = 30 * 60 * 1000;
 
 /* ───── Page ───── */
-export default function SearchPage() {
+function SearchPageInner() {
   const router = useRouter();
   const sp = useSearchParams();
   const { search, results: sseResults, status, errors, elapsedMs } = useAdSearch();
@@ -515,5 +517,13 @@ export default function SearchPage() {
         onDeselect={() => setSelectedIds(new Set())}
       />
     </DashboardShell>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchPageInner />
+    </Suspense>
   );
 }
