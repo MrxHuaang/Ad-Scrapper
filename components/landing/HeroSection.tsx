@@ -98,10 +98,26 @@ export function HeroSection() {
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
-              href="/login"
-              className="hero-cta group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] hover:shadow-[0_2px_32px_rgba(255,255,255,0.2),0_0_56px_-18px_var(--zl-spectrum-glow)] active:scale-[0.97]"
+              href="/register"
+              className="hero-cta group inline-flex items-center gap-1.5 rounded-full bg-white py-2.5 pl-5 pr-1.5 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-white/90 hover:shadow-[0_2px_32px_rgba(255,255,255,0.2),0_0_56px_-18px_var(--zl-spectrum-glow)] active:scale-[0.97] sm:gap-2 sm:pl-6 sm:pr-2 sm:py-3"
             >
               Get Started
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black text-white sm:h-8 sm:w-8">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  className="h-3.5 w-3.5 sm:h-3 sm:w-3"
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </span>
             </Link>
 
             <LandingSectionLink
