@@ -19,7 +19,8 @@
       "Bash(python populate_db.py --source anac_brazil)",
       "Bash(python populate_db.py --source transport_canada)",
       "Bash(python -c ' *)",
-      "Bash(curl -s -X GET 'https://cmbhwdoiihghwdchxvcz.supabase.co/rest/v1/profiles?select=id,plan,stripe_customer_id,stripe_subscription_id' -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtYmh3ZG9paWhnaHdkY2h4dmN6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg1MDMzMSwiZXhwIjoyMDkxNDI2MzMxfQ._B9H0D8bK_MPBPIWK64d5C8FK3zqJIHxaM9_mP9BNiM' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtYmh3ZG9paWhnaHdkY2h4dmN6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg1MDMzMSwiZXhwIjoyMDkxNDI2MzMxfQ._B9H0D8bK_MPBPIWK64d5C8FK3zqJIHxaM9_mP9BNiM')"
+      "Bash(curl -s -X GET 'https://cmbhwdoiihghwdchxvcz.supabase.co/rest/v1/profiles?select=id,plan,stripe_customer_id,stripe_subscription_id' -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtYmh3ZG9paWhnaHdkY2h4dmN6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg1MDMzMSwiZXhwIjoyMDkxNDI2MzMxfQ._B9H0D8bK_MPBPIWK64d5C8FK3zqJIHxaM9_mP9BNiM' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtYmh3ZG9paWhnaHdkY2h4dmN6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg1MDMzMSwiZXhwIjoyMDkxNDI2MzMxfQ._B9H0D8bK_MPBPIWK64d5C8FK3zqJIHxaM9_mP9BNiM')",
+      "PowerShell(Stop-Process -Id 23256 -Force -ErrorAction SilentlyContinue)"
     ]
   }
 }

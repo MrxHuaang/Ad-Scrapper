@@ -1,10 +1,46 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { HeroVisual } from "./HeroVisual";
 import { LandingSectionLink } from "@/components/landing/LandingSectionLink";
 
+gsap.registerPlugin(useGSAP);
+
 export function HeroSection() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      // Words slide up from overflow-hidden containers
+      tl.from(".hero-word", {
+        yPercent: 110,
+        duration: 1,
+        stagger: 0.1,
+      })
+        .from(
+          ".hero-tagline",
+          { opacity: 0, y: 18, duration: 0.7 },
+          "-=0.5"
+        )
+        .from(
+          ".hero-cta",
+          { opacity: 0, y: 14, duration: 0.6, stagger: 0.08 },
+          "-=0.45"
+        );
+    },
+    { scope: containerRef }
+  );
+
   return (
-    <section className="relative flex h-dvh min-h-[640px] items-center overflow-x-hidden overflow-y-visible">
+    <section
+      ref={containerRef}
+      className="relative flex h-dvh min-h-[640px] items-center overflow-x-hidden overflow-y-visible"
+    >
       {/* Pure black base */}
       <div className="absolute inset-0 bg-black" />
 
@@ -17,11 +53,10 @@ export function HeroSection() {
         }}
       />
 
-
-      {/* Radar visual — replaces Spline */}
+      {/* Radar visual */}
       <HeroVisual />
 
-      {/* Mobile right-side ambient glow (no 3D model on mobile) */}
+      {/* Mobile right-side ambient glow */}
       <div
         className="pointer-events-none absolute inset-y-0 right-0 w-1/2 md:hidden"
         style={{
@@ -30,13 +65,13 @@ export function HeroSection() {
         }}
       />
 
-      {/* Left fade so radar doesn't bleed into text */}
+      {/* Left fade */}
       <div
         className="pointer-events-none absolute inset-y-0 left-0 hidden w-[52%] md:block"
         style={{ background: "linear-gradient(to right, black 46%, transparent 100%)" }}
       />
 
-      {/* Bottom fade into next section */}
+      {/* Bottom fade */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32"
         style={{ background: "linear-gradient(to bottom, transparent, black)" }}
@@ -45,44 +80,33 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-[10] mx-auto w-full max-w-6xl px-6 lg:px-8">
         <div className="max-w-xl">
-
-          <h1
-            className="font-[family-name:var(--font-cormorant)] text-[clamp(3rem,7vw,5.5rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-white"
-          >
-            {["Compliance", "tracking"].map((text, i) => (
+          <h1 className="font-[family-name:var(--font-cormorant)] text-[clamp(3rem,7vw,5.5rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-white">
+            {["Compliance", "tracking"].map((text) => (
               <div key={text} className="overflow-hidden">
-                <span className="block">
-                  {text}
-                </span>
+                <span className="hero-word block">{text}</span>
               </div>
             ))}
             <div className="overflow-hidden">
-              <span className="italic zl-text-spectrum block">
-                for aviation.
-              </span>
+              <span className="hero-word italic zl-text-spectrum block">for aviation.</span>
             </div>
           </h1>
 
-          <p
-            className="mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-[#737373]"
-          >
+          <p className="hero-tagline mt-6 max-w-sm text-[0.9375rem] leading-relaxed text-[#737373]">
             One platform. Every AD from FAA, EASA, Transport Canada, and ANAC.
             Updated every 24 hours.
           </p>
 
-          <div
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
               href="/login"
-              className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] hover:shadow-[0_2px_32px_rgba(255,255,255,0.2),0_0_56px_-18px_var(--zl-spectrum-glow)] active:scale-[0.97]"
+              className="hero-cta group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-[0_2px_24px_rgba(255,255,255,0.1),0_0_48px_-20px_var(--zl-spectrum-glow)] transition-all duration-300 hover:bg-[#f0f0f0] hover:shadow-[0_2px_32px_rgba(255,255,255,0.2),0_0_56px_-18px_var(--zl-spectrum-glow)] active:scale-[0.97]"
             >
               Get Started
             </Link>
 
             <LandingSectionLink
               sectionId="product"
-              className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full border border-white/[0.12] bg-white/[0.06] px-6 py-3 text-sm text-[#a1a1a1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_36px_-20px_var(--zl-spectrum-glow)] active:scale-[0.97]"
+              className="hero-cta group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-full border border-white/[0.12] bg-white/[0.06] px-6 py-3 text-sm text-[#a1a1a1] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-300 hover:border-white/[0.18] hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_36px_-20px_var(--zl-spectrum-glow)] active:scale-[0.97]"
             >
               <span
                 className="pointer-events-none absolute inset-x-0 top-0 h-px opacity-50"

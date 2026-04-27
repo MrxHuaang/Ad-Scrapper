@@ -64,11 +64,9 @@ export default function LandingPage() {
           />
 
           <div className="relative z-10 w-full">
-            {/* ProductPreview contains "Platform Overview" */}
             <ProductPreview />
             <FeaturesGrid />
             <StickyAudienceSection />
-            <SectionTransition type="curve" className="-mt-1" />
             <AuthorityCoverage />
           </div>
         </div>

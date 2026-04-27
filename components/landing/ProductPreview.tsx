@@ -52,12 +52,12 @@ export function ProductPreview() {
         }}
         aria-hidden
       />
-      {/* Soft join into features: no opaque black band — only light vignette */}
+      {/* Blend into features: long ramp so Prism/grey fades to panel black without a hard seam */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(22vh,180px)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[min(40vh,320px)]"
         style={{
           background:
-            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.28) 100%)",
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.08) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.62) 72%, rgba(0,0,0,0.88) 100%)",
         }}
         aria-hidden
       />
